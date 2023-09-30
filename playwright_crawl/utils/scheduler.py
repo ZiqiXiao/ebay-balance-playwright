@@ -90,16 +90,13 @@ class Scheduler(object):
 
     async def register_mission(self):
         async def captcha_handler(request):
-            nonlocal not_captcha_handled
             nonlocal email
             async with captcha_semaphore:
-                if "https://www.ebay.com/captcha/init" in request.url and not_captcha_handled:
-                    not_captcha_handled = False
+                if "https://www.ebay.com/captcha/init" in request.url:
                     logger.debug('Captcha Event Is Listened')
                     await Solution(page=self.page).resolve()
 
         captcha_semaphore = asyncio.Semaphore(1)
-        not_captcha_handled = True
 
         logger.info('Start Register Mission...')
         self.page.on('request', captcha_handler)
@@ -121,8 +118,6 @@ class Scheduler(object):
         await login.fill_personal_info()
         await self.page.wait_for_selector('input[id="redemption-code"]')
         logger.info('Login Success!')
-        logger.info(
-            f'Register Success! Save Account Info Success: {email} --- {password}')
 
     async def check_balance(self, gift_card_no):
         logger.info('Checking balance')
