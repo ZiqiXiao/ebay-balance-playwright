@@ -1,3 +1,4 @@
+#!/bin/bash
 #uvicorn --workers 4 "fastapi-webdriver-manager.app:app" --reload
 #uvicorn --workers 1 "fastapi-webdriver-manager.app:app"
 
