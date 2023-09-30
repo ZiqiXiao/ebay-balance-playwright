@@ -5,7 +5,9 @@
 .ipynb_checkpoints
 */.ipynb_checkpoints/*
 playwright_crawl/data/captcha/*
+!playwright_crawl/data/captcha/.gitkeep
 logs/*
+!logs/.gitkeep
 
 
 # IPython
