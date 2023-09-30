@@ -165,8 +165,7 @@ async def check_balance(gift_card_no: str):
                                 content={"status": "error", "message": "Please Enter a 13-digits number!"})
 
         proxy_port_list = [i for i in await r.zrange('active_port', 0, -1, desc=False, withscores=True) if
-                           json.loads(i[0])['port'] in PORT_LIST and json.loads(i[0])['count'] > 0 and
-                           datetime.timestamp(datetime.now()) - i[1] < 300]
+                           json.loads(i[0])['port'] in PORT_LIST and json.loads(i[0])['count'] > 0]
 
         for i in proxy_port_list:
             create_time = i[1]
