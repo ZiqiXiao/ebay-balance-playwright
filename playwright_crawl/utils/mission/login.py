@@ -64,7 +64,6 @@ class LoginMission(object):
         logger.debug('Filling Personal Info...')
         faker = Faker()
         await self.page.select_option('select[id="countryId"]', '1')
-        # await self.page.wait_for_timeout(5000)
         await self.page.wait_for_load_state('load')
         address = faker.address().split('\n')[0].split(' ')[0:2]
         if len(address[0]) > 4:
@@ -79,15 +78,19 @@ class LoginMission(object):
             await self.page.keyboard.down(i)
             await self.page.keyboard.up(i)
             await self.page.wait_for_timeout(random() * 300)
+        logger.debug('Address Filled')
 
         await self.page.wait_for_timeout(random() * 2000)
 
         await self.page.click('#addressSugg_listitem0')
+        logger.debug('Address Selected')
 
         await self.page.wait_for_load_state('load')
         phone_no = await self.page.wait_for_selector('input[id="phoneFlagComp1"]')
         await phone_no.click()
         await phone_no.type('319' + '400' + faker.msisdn()[9:], delay=200*random())
+        logger.debug('Phone Number Filled')
+        
         await self.page.wait_for_timeout(random()*1000)
         await self.page.click('#sbtBtn')
 
