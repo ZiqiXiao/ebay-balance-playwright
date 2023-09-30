@@ -80,7 +80,7 @@ class Scheduler(object):
                 timezone_id=timezone,
                 locale='en-US',
                 geolocation={'longitude': longitude, 'latitude': latitude},
-                record_video_dir=os.path.join(ROOT_PATH, 'logs')
+                # record_video_dir=os.path.join(ROOT_PATH, 'logs')
             )
 
         await stealth_async(self.page)

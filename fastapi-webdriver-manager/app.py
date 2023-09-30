@@ -114,7 +114,7 @@ async def hello():
 
 @app.get("/start-browser")
 async def start_browser(port: str):
-    max_retries = 3
+    max_retries = 6
     retries = 0
 
     while retries < max_retries:
@@ -141,7 +141,7 @@ async def start_browser(port: str):
             # return JSONResponse(status_code=status.HTTP_200_OK,
             #                     content={"status": "success", "message": "Web is ready!"})
         except KeyboardInterrupt:
-            return
+            break
         except Exception as e:
             retries += 1
             try:
