@@ -1,5 +1,6 @@
 import asyncio
 import json
+import os
 import random
 from typing import Optional
 
@@ -8,7 +9,7 @@ from faker import Faker
 from loguru import logger
 from playwright.async_api import async_playwright, Page, Browser, Playwright
 
-from playwright_crawl.config.settings import SIGNIN_URL, EMAIL_PASSWORD
+from playwright_crawl.config.settings import SIGNIN_URL, EMAIL_PASSWORD, ROOT_PATH
 from playwright_crawl.utils.mission.balance import CheckBalance
 from playwright_crawl.utils.mission.captcha_recognizer.solution import Solution
 from playwright_crawl.utils.mission.login import LoginMission
@@ -45,7 +46,8 @@ class Scheduler(object):
         else:
             logger.debug(f'Start a new browser on {self.port}')
             self.browser = await self.playwright.chromium.launch(
-                args=[f'--remote-debugging-port={self.port}', '--use-gl=desktop'],
+                args=[
+                    f'--remote-debugging-port={self.port}', '--use-gl=desktop'],
                 headless=self.headless,
                 proxy=self.proxy,
             )
@@ -57,7 +59,8 @@ class Scheduler(object):
                 'America/Los_Angeles': {'latitude': (32.534306, 49.000000), 'longitude': (-125.000000, -114.130470)}
             }
 
-            timezone = list(timezone_data.keys())[random.randint(0, len(timezone_data.keys()) - 1)]
+            timezone = list(timezone_data.keys())[
+                random.randint(0, len(timezone_data.keys()) - 1)]
 
             lat_range = timezone_data[timezone]['latitude']
             long_range = timezone_data[timezone]['longitude']
@@ -68,9 +71,7 @@ class Scheduler(object):
             width = random.randint(800, 900)
             height = random.randint(800, 1080)
 
-            header = Headers(
-                # headers=True  # generate misc headers
-                )
+            header = Headers()
             headers = header.generate()
 
             self.page = await self.browser.new_page(
@@ -79,7 +80,7 @@ class Scheduler(object):
                 timezone_id=timezone,
                 locale='en-US',
                 geolocation={'longitude': longitude, 'latitude': latitude},
-                # record_video_dir='/Users/xiaoziqi/app-dev/parttime/bb/20230905-ebay-balance/dev/logs',
+                record_video_dir=os.path.join(ROOT_PATH, 'logs')
             )
 
         await stealth_async(self.page)
@@ -120,7 +121,8 @@ class Scheduler(object):
         await login.fill_personal_info()
         await self.page.wait_for_selector('input[id="redemption-code"]')
         logger.info('Login Success!')
-        logger.info(f'Register Success! Save Account Info Success: {email} --- {password}')
+        logger.info(
+            f'Register Success! Save Account Info Success: {email} --- {password}')
 
     async def check_balance(self, gift_card_no):
         logger.info('Checking balance')

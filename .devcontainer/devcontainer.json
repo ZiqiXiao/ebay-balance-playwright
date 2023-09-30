@@ -4,26 +4,25 @@
 	"name": "Python 3",
 	// Or use a Dockerfile or Docker Compose file. More info: https://containers.dev/guide/dockerfile
 	"image": "mcr.microsoft.com/devcontainers/python:1-3.11-bullseye",
+	
+	// Features to add to the dev container. More info: https://containers.dev/features.
 	"features": {
 		"ghcr.io/devcontainers/features/git:1": {},
 		"ghcr.io/itsmechlark/features/redis-server:1": {}
 	},
-	
-
-	// Features to add to the dev container. More info: https://containers.dev/features.
-	// "features": {},
 
 	// Use 'forwardPorts' to make a list of ports inside the container available locally.
 	// "forwardPorts": [],
 
 	// Use 'postCreateCommand' to run commands after the container is created.
 	"postCreateCommand": {
-		"python_libaray": "pip3 install --user -r requirements.txt"
+		"python-libaray": "pip install --user -r requirements.txt"
 	},
 
 	"postStartCommand": {
-		"playwright": "playwright install",
-		"git-config": "git config --global user.name \"Ziqi Xiao\" && git config --global user.email \"xzqshawn@126.com\""
+		"playwright": "playwright install && playwright install-deps",
+		"git-config": "git config --global user.name \"Ziqi Xiao\" && git config --global user.email \"xzqshawn@126.com\"",
+		"nginx": "sh nginx-setup.sh"
 	},
 
 
@@ -34,7 +33,8 @@
 			"extensions": [
 				"GitHub.copilot",
 				"donjayamanne.python-extension-pack",
-				"codezombiech.gitignore"
+				"codezombiech.gitignore",
+				"ms-azuretools.vscode-docker"
 			]
 		}
 	}

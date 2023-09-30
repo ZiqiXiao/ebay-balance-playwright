@@ -4,6 +4,8 @@
 .idea/
 .ipynb_checkpoints
 */.ipynb_checkpoints/*
+playwright_crawl/data/captcha/*
+
 
 # IPython
 profile_default/

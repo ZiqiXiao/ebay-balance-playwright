@@ -39,14 +39,16 @@ class Solution(object):
             single_captcha_element_url = match_result.group(1).replace('imgs2.hcaptcha.com',
                                                                        'imgs.hcaptcha.com') if match_result else None
 
-            logger.debug(f'single_captcha_element_url {single_captcha_element_url}')
+            logger.debug(
+                f'single_captcha_element_url {single_captcha_element_url}')
 
             with open(CAPTCHA_SINGLE_IMAGE_FILE_PATH % (i,), 'wb') as f:
                 f.write(requests.get(single_captcha_element_url).content)
 
             resized_single_captcha_base64_string = await resize_base64_image_async(CAPTCHA_SINGLE_IMAGE_FILE_PATH % (
                 i,), (100, 100))
-            resized_single_captcha_base64_strings.append(resized_single_captcha_base64_string)
+            resized_single_captcha_base64_strings.append(
+                resized_single_captcha_base64_string)
 
         logger.debug(
             f'length of single_captcha_element_urls {len(resized_single_captcha_base64_strings)}')
@@ -63,7 +65,8 @@ class Solution(object):
             logger.error('count not get captcha recognize result')
             return
         logger.debug(f'captcha_recognize_result {captcha_recognize_result}')
-        recognized_results = captcha_recognize_result.get('solution', {}).get('objects')
+        recognized_results = captcha_recognize_result.get(
+            'solution', {}).get('objects')
 
         if not recognized_results:
             logger.error('count not get captcha recognized indices')
