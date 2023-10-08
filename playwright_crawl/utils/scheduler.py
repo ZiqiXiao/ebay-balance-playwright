@@ -47,7 +47,7 @@ class Scheduler(object):
             logger.debug(f'Start a new browser on {self.port}')
             self.browser = await self.playwright.chromium.launch(
                 args=[
-                    f'--remote-debugging-port={self.port}', '--use-gl=desktop'],
+                    f'--remote-debugging-port={self.port}'],
                 headless=self.headless,
                 proxy=self.proxy,
             )
@@ -104,10 +104,22 @@ class Scheduler(object):
         await self.page.goto(SIGNIN_URL)
         await self.page.click('#create-account-link')
 
-        email = (self.faker.email().split('@')[0] +
-                 self.faker.email().split('@')[0] +
-                 str(random.randint(0, 99999)) +
-                 '@nuyy.cc')
+        def random_substring(s, max_length=10):
+            if len(s) <= max_length:
+                return s
+            start_index = random.randint(0, len(s) - 1 - max_length)
+            end_index = start_index + max_length
+            return s[start_index:end_index]
+
+        # 生成两个随机的 email 本地部分
+        email_part1 = random_substring(self.faker.email().split('@')[0])
+        email_part2 = random_substring(self.faker.email().split('@')[0])
+
+        # 生成一个随机的5位数
+        random_number = str(random.randint(0, 99999))
+
+        # 构建最终的 email 地址
+        email = email_part1 + email_part2 + random_number + '@nuyy.cc'
         password = EMAIL_PASSWORD
 
         register = RegisterMission(self.page)

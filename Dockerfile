@@ -8,17 +8,21 @@ RUN mkdir logs
 COPY fastapi-webdriver-manager ./fastapi-webdriver-manager
 COPY playwright_crawl ./playwright_crawl
 
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    lsof \
+    procps
+
 # 将requirements.txt复制到工作目录并安装依赖项
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 # 安装浏览器及依赖
 RUN playwright install --with-deps chromium
 
-COPY nginx-setup.sh .
-COPY nginx.conf .
+# COPY nginx-setup.sh .
+# COPY nginx.conf .
 
-RUN chmod +x nginx-setup.sh
-RUN NGINX_CONFIG_PATH='/app/nginx.conf' ./nginx-setup.sh 
+# RUN chmod +x nginx-setup.sh
+# RUN NGINX_CONFIG_PATH='/app/nginx.conf' ./nginx-setup.sh 
 
 # 假设您的shell脚本名称为 start.sh
 COPY startup.sh .

@@ -20,10 +20,10 @@ REDIS_HOST = os.environ.get('REDIS_HOST', 'localhost')
 
 logger.add(os.path.join('logs', LOG_NAME), rotation="1 day", retention="7 days", level='DEBUG')
 
-PORT_DISABLED_INTERVAL = 1200
+PORT_DISABLED_INTERVAL = 480
 PORT_RENEW_INTERVAL = PORT_DISABLED_INTERVAL + 10
 
-r = Redis(host=REDIS_HOST, db=0, decode_responses=True)
+r = Redis(host=REDIS_HOST, password='IamtheBest1!', db=0, decode_responses=True)
 
 
 async def run_command(cmd):
