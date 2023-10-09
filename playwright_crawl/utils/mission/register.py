@@ -14,10 +14,10 @@ class RegisterMission(object):
     def __init__(self, page):
         self.page: Page = page
         self.faker: Faker = Faker()
+        self.page.set_default_timeout(15000)
 
     async def fill_info(self, email: str = '', password: str = EMAIL_PASSWORD):
         await self.page.wait_for_load_state('load')
-        # await self.page.wait_for_timeout(5000)
         logger.debug('Filling Register Info...')
         firstname = self.faker.first_name() + self.faker.last_name()
         lastname = self.faker.last_name() + self.faker.first_name()

@@ -85,7 +85,7 @@ class Scheduler(object):
 
         await stealth_async(self.page)
         await self.page.route('**/*.{png,jpg,jpeg,svg,gif}', lambda route, _: route.abort())
-        self.page.set_default_timeout(60000)
+        self.page.set_default_timeout(15000)
         logger.info('Init Browser Success!')
 
     async def register_mission(self):
