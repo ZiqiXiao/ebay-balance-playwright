@@ -36,31 +36,35 @@ async def save_acct_info(email: str = '', port: str = ''):
     await r.close()
 
 
-def get_verification_code(keywords: str = 'Your eBay security code', email: str = ''):
-    max_retries = 3
+def get_verification_code(
+    keywords: str = 'Your eBay security code', 
+    email: str = '', 
+    sleep_time: int = 3,
+    max_retries: int = 10
+    ):
     retries = 0
 
     while retries <= max_retries:
-        try:
-            logger.debug(f'Start Get Verification Code...')
-            # 连接到 IMAP 服务器
-            server = imaplib.IMAP4_SSL(EMAIL_SERVER)
+        logger.debug(f'Start Get Verification Code...')
+        # 连接到 IMAP 服务器
+        server = imaplib.IMAP4_SSL(EMAIL_SERVER)
 
-            # 登录
-            server.login(EMAIL_USERNAME, EMAIL_PASSWORD)
+        # 登录
+        server.login(EMAIL_USERNAME, EMAIL_PASSWORD)
 
-            # 选择邮箱
-            server.select("inbox")
+        # 选择邮箱
+        server.select("inbox")
 
-            # 搜索邮件
-            criteria = f'(SUBJECT "{keywords}" TO "{email}")'
-            logger.debug(f'Criteria: {criteria}')
-            status, messages = server.search(None, criteria)
+        # 搜索邮件
+        criteria = f'(SUBJECT "{keywords}" TO "{email}")'
+        logger.debug(f'Criteria: {criteria}')
+        status, messages = server.search(None, criteria)
 
-            # 获取邮件 ID 列表
-            email_ids = messages[0].split()
+        # 获取邮件 ID 列表
+        email_ids = messages[0].split()
 
-            # 获取最新的电子邮件 ID
+        # 获取最新的电子邮件 ID
+        if len(email_ids) != 0:
             latest_email_id = email_ids[-1]
 
             # 获取邮件详情
@@ -77,9 +81,9 @@ def get_verification_code(keywords: str = 'Your eBay security code', email: str 
             server.close()
             logger.info(f'Verification Code: {verification_code}')
             return verification_code
-        except Exception as e:
+        else:
             retries += 1
             logger.debug(f'Get Verification Code Failed. Retries: {retries}')
-            time.sleep(3)
+            time.sleep(sleep_time)
             continue
     return None

@@ -55,10 +55,14 @@ class RegisterMission(object):
         await self.page.wait_for_timeout(3000)
         vcode: str | None = await get_verification_code_async(email=email)
 
+        # retries = 0
+        # max_retries = 5
         if vcode is None:
-            await self.page.click('#mainContent > div:nth-child(3) > div.module--verify-container > div:nth-child(4) > '
-                              'div > a')
-            vcode = await get_verification_code_async(email=email)
+            raise Exception('Verification Code Not Found! Start a new mission.')
+            # while retries <= max_retries and vcode==None:
+                # await self.page.click('#mainContent > div:nth-child(3) > div.module--verify-container > div:nth-child(4) > '
+                #                 'div > a')
+                # vcode = await get_verification_code_async(email=email, sleep_time=10, max_retries=18)
 
         await self.page.fill('input[id="pinbox-0"]', vcode[0])
         await self.page.wait_for_timeout(random() * 200)
