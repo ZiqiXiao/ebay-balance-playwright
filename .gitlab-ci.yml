@@ -36,7 +36,7 @@ deploy-test:
         - |
             ssh -o StrictHostKeyChecking=no root@$SERVER_IP -i $MACBOOK_PVT_KEY "
             docker login -u $DOCKER_USERNAME -p $DOCKER_PASSW &&
-            docker pull ziqix $DOCKER_IMAGE_NAME:$DOCKER_IMAGE_TAG &&
+            docker pull $DOCKER_IMAGE_NAME:$DOCKER_IMAGE_TAG &&
             docker compose stop $APP_CONTAINER_NAME || true &&
             docker container rm $APP_CONTAINER_NAME || true &&
             docker compose up $APP_CONTAINER_NAME -d &&
