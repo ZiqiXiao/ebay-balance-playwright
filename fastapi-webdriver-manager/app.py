@@ -115,7 +115,7 @@ async def hello():
 
 @app.get("/start-browser")
 async def start_browser(port: str):
-    max_retries = 6
+    max_retries = 10
     retries = 0
 
     while retries < max_retries:
