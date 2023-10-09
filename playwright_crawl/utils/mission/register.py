@@ -52,7 +52,6 @@ class RegisterMission(object):
         logger.info('Register Info Submitted')
 
     async def fill_verification_code(self, email: str = ''):
-        await self.page.wait_for_timeout(3000)
         vcode: str | None = await get_verification_code_async(email=email)
 
         # retries = 0

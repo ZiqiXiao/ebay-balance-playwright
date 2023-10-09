@@ -104,7 +104,7 @@ class Scheduler(object):
         await self.page.goto(SIGNIN_URL)
         await self.page.click('#create-account-link')
 
-        def random_substring(s, max_length=10):
+        def random_substring(s, max_length=6):
             if len(s) <= max_length:
                 return s
             start_index = random.randint(0, len(s) - 1 - max_length)

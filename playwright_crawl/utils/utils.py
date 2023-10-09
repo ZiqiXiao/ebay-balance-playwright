@@ -40,7 +40,7 @@ def get_verification_code(
     keywords: str = 'Your eBay security code', 
     email: str = '', 
     sleep_time: int = 3,
-    max_retries: int = 10
+    max_retries: int = 5
     ):
     retries = 0
 
