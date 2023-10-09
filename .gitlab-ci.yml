@@ -1,0 +1,45 @@
+stages:          # List of stages for jobs, and their order of execution
+  - build
+  - test
+
+variables:
+    DOCKER_IMAGE_NAME: ziqix/ebay-balance-fastapi
+    DOCKER_IMAGE_TAG: 0.1.0
+
+docker-build:
+  image: docker:latest
+  stage: build
+  services:
+    - docker:dind
+  before_script:
+    - docker login -u "$DOCKER_USERNAME" -p "$DOCKER_PASSW"
+  script:
+    - docker build --pull -t "$DOCKER_IMAGE_NAME" .
+    - docker push "$DOCKER_IMAGE_NAME:$DOCKER_IMAGE_TAG"
+  # Run this job in a branch where a Dockerfile exists
+  rules:
+    - if: $CI_COMMIT_BRANCH
+      exists:
+        - Dockerfile
+
+deploy-test:
+    stage: test
+    variables:
+        SSH_PRIVATE_KEY: $MACBOOK_PVT_KEY
+        SERVER_IP: $EBAY_BALANCE_TEST_SERVER
+        APP_CONTAINER_NAME: fastapi
+        NGINX_CONTAINER_NAME: nginx_fastapi
+    before_script:
+        - chmod 400 $MACBOOK_PVT_KEY
+    script:
+        - scp -o StrictHostKeyChecking=no -i $MACBOOK_PVT_KEY nginx/appseed-app.conf root@${SERVER_IP}:/root/
+        - |
+            ssh -o StrictHostKeyChecking=no root@$SERVER_IP -i $MACBOOK_PVT_KEY "
+            docker login -u $DOCKER_USERNAME -p $DOCKER_PASSW &&
+            docker pull ziqix $DOCKER_IMAGE_NAME:$DOCKER_IMAGE_TAG &&
+            docker compose stop $APP_CONTAINER_NAME || true &&
+            docker container rm $APP_CONTAINER_NAME || true &&
+            docker compose up $APP_CONTAINER_NAME -d &&
+            docker compose stop $NGINX_CONTAINER_NAME || true &&
+            docker container rm $NGINX_CONTAINER_NAME || true &&
+            docker compose up $NGINX_CONTAINER_NAME -d"
