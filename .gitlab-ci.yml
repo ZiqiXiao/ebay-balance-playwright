@@ -44,3 +44,5 @@ deploy-test:
             docker compose stop $NGINX_CONTAINER_NAME || true &&
             docker container rm $NGINX_CONTAINER_NAME || true &&
             docker compose up $NGINX_CONTAINER_NAME -d"
+    needs:
+      - deploy_dev_lambda
