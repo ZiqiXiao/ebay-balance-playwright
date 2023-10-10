@@ -1,4 +1,4 @@
-FROM gitpod/workspace-full-vnc
+FROM gitpod/workspace-full-vnc:2023-10-10-09-48-27
 
 USER gitpod
 
