@@ -4,12 +4,12 @@
 
 # Learn more from ready-to-use templates: https://www.gitpod.io/docs/introduction/getting-started/quickstart
 
-image: gitpod/workspace-full-vnc
+image: 
+  file: .gitpod.Dockerfile
 tasks:
-  - init: | 
-      pyenv install 3.11 &&
-      pyenv global 3.11 &&
-      pip install -r requirements.txt
+  - init: which python
+      
+
 
 
 
