@@ -3,8 +3,14 @@
 # and commit this file to your remote git repository to share the goodness with others.
 
 # Learn more from ready-to-use templates: https://www.gitpod.io/docs/introduction/getting-started/quickstart
-image: gitpod/workspace-python
+
+image: gitpod/workspace-full-vnc
 tasks:
-  - init: pip install -r requirements.txt
+  - init: | 
+      pyenv install 3.11 &&
+      pyenv global 3.11 &&
+      pip install -r requirements.txt
+
+
 
 
