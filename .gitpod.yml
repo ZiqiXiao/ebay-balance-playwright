@@ -4,24 +4,11 @@
 
 # Learn more from ready-to-use templates: https://www.gitpod.io/docs/introduction/getting-started/quickstart
 
-image: gitpod/workspace-full-vnc:2023-10-10-09-48-27
+image: ziqix/ebay-balance-fastapi:dev-gitpod
 tasks:
   - init: |
-      sudo apt-get update && \
-      pyenv install -f 3.11 && \
       pyenv global 3.11 && \
-      
-      pip install -r requirements.txt && \
-      playwright install --with-deps chromium && \
-
-      export REDIS_HOST="redis" && \
-
-      docker run \
-      --name redis \
-      --restart always \
-      -e TZ=Asia/Shanghai \
-      -d redis:alpine3.18 \
-      /bin/sh -c "echo 'requirepass $$REDIS_PASSW' >> /usr/local/etc/redis/redis.conf && redis-server /usr/local/etc/redis/redis.conf"
+      docker compose -f docker-compose-gitpod.yml up
       
 
 
