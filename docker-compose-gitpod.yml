@@ -8,5 +8,5 @@ services:
       - /bin/sh -c "touch redis && echo 'requirepass $$REDIS_PASSW' >> redis.conf && redis-server redis.conf"
     environment:
       - TZ=Asia/Shanghai
-    port:
-      - "6379:6379"
+    ports:
+      - 6379:6379
