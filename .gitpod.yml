@@ -8,7 +8,7 @@ image: ziqix/ebay-balance-fastapi:dev-gitpod
 tasks:
   - init: |
       pyenv global 3.11 && \
-      docker compose -f docker-compose-gitpod.yml up
+      docker compose -d -f docker-compose-gitpod.yml up
       
 
 
