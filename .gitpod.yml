@@ -7,7 +7,15 @@
 image: 
   file: .gitpod.Dockerfile
 tasks:
-  - init: which python
+  - init: |
+      export REDIS_HOST="redis" &&
+      docker run
+      --name redis
+      --restart always
+      -v $(pwd)/redis.conf:/usr/local/etc/redis/redis.conf
+      -e TZ=Asia/Shanghai
+      -d redis:alpine3.18
+      redis-server /usr/local/etc/redis/redis.conf
       
 
 
