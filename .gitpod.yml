@@ -8,7 +8,7 @@ image: gitpod/workspace-full-vnc:2023-10-10-09-48-27
 tasks:
   - init: |
       sudo apt-get update && \
-      pyenv install 3.11 && \
+      pyenv install -f 3.11 && \
       pyenv global 3.11 && \
       
       pip install -r requirements.txt && \
