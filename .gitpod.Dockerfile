@@ -6,7 +6,7 @@ COPY requirements.txt .
 
 RUN sudo apt-get update && \
     pyenv install 3.11 && \
-    pyenv global 3.11 && \
+    pyenv global 3.11
     
 RUN pip install -r requirements.txt && \
     playwright install --with-deps chromium
