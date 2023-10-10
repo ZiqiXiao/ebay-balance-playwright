@@ -19,10 +19,9 @@ tasks:
       docker run \
       --name redis \
       --restart always \
-      -v $)/redis.conf:/usr/local/etc/redis/redis.conf \
       -e TZ=Asia/Shanghai \
       -d redis:alpine3.18 \
-      redis-server /usr/local/etc/redis/redis.conf
+      /bin/sh -c "echo 'requirepass $$REDIS_PASSW' >> /usr/local/etc/redis/redis.conf && redis-server /usr/local/etc/redis/redis.conf"
       
 
 
