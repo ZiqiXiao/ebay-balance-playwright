@@ -56,4 +56,4 @@ HEADERS = {
     "cache-control": "max-age=0",
 }
 
-HEADLESS = "Ture"
+HEADLESS = "True"
