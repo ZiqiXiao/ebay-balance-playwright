@@ -17,6 +17,11 @@ from playwright_crawl.utils.scheduler import Scheduler
 PORT_LIST = os.environ.get('PORTS', '').split(',')
 LOG_NAME = os.environ.get('LOG_NAME', 'logs')
 REDIS_HOST = os.environ.get('REDIS_HOST', 'localhost')
+HDL = os.environ.get('HEADLESS', HEADLESS)
+if HDL.lower == 'true':
+    HDL = True
+else:
+    HDL = False
 
 logger.add(os.path.join('logs', LOG_NAME), rotation="1 day", retention="7 days", level='DEBUG')
 
@@ -128,7 +133,7 @@ async def start_browser(port: str):
             proxy_port = {'proxy': this_proxy.copy(), 'count': 4, 'port': port}
             logger.debug(proxy_port)
             scheduler = Scheduler(
-                headless=HEADLESS,
+                headless=HDL,
                 proxy=proxy_port['proxy'],
                 port=port,
             )
@@ -174,7 +179,7 @@ async def check_balance(gift_card_no: str):
             logger.debug(f'Using {dict_i}')
 
             scheduler = Scheduler(
-                headless=HEADLESS,
+                headless=HDL,
                 proxy=dict_i['proxy'],
                 port=dict_i['port'],
                 reuse=True

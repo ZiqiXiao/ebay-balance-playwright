@@ -65,9 +65,10 @@ class LoginMission(object):
         faker = Faker()
         await self.page.select_option('select[id="countryId"]', '1')
         await self.page.wait_for_load_state('load')
+
         address = faker.address().split('\n')[0].split(' ')[0:2]
-        if len(address[0]) > 4:
-            address[0] = address[0][0:4]
+        if len(address[0]) > 3:
+            address[0] = address[0][0:3]
         address[1] = address[1].replace(',', '')
 
         if len(address[1]) > 4:
