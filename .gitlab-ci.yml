@@ -33,7 +33,7 @@ deploy-test:
     before_script:
         - chmod 400 $MACBOOK_PVT_KEY
     script:
-        - scp -o StrictHostKeyChecking=no -i $MACBOOK_PVT_KEY nginx.conf root@${SERVER_IP}:/root/
+        - scp -o StrictHostKeyChecking=no -i $MACBOOK_PVT_KEY nginx.conf root@${SERVER_IP}:/tmp/
         - |
             ssh -o StrictHostKeyChecking=no root@$SERVER_IP -i $MACBOOK_PVT_KEY "
             docker login -u $DOCKER_USERNAME -p $DOCKER_PASSW &&
