@@ -87,6 +87,9 @@ async def renew_port_monitor():
 
         await asyncio.sleep(2)
 
+async def init_start_browser(port, wait_time=10):
+    await asyncio.sleep(wait_time)
+    await start_browser(port)
 
 @asynccontextmanager
 @logger.catch
@@ -97,7 +100,7 @@ async def lifespan(app: FastAPI):
     """
     await r.flushall()
 
-    await asyncio.gather(*[start_browser(port) for port in PORT_LIST])
+    await asyncio.gather(*[init_start_browser(port, index*20) for index, port in enumerate(PORT_LIST)])
 
     active_port_monitor_task = asyncio.create_task(active_port_monitor())
     renew_port_monitor_task = asyncio.create_task(renew_port_monitor())
