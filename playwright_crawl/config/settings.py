@@ -45,9 +45,14 @@ CAPTCHA_RESOLVER_API_KEY = env.str("CAPTCHA_RESOLVER_API_KEY")
 Proxy
 """
 OX_PROXY = {
-    "server": "https://us-pr.oxylabs.io:",
-    "username": "customer-ziqix-sessid-blc",
-    "password": "Xzq062424",
+    # "server": "https://us-pr.oxylabs.io:%s",
+    # "username": "customer-ziqix-sessid-%s",
+
+    # Time Specified Session
+    "server": "https://pr.oxylabs.io:7777",
+    "username": "customer-ziqix-cc-us-sessid-%s-sesstime-10",
+
+    "password": "Xzq062424"    
 }
 
 HEADERS = {

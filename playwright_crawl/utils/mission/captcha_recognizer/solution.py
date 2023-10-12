@@ -1,5 +1,5 @@
 import re
-from random import random
+import random
 
 import requests
 from loguru import logger
@@ -20,7 +20,7 @@ class Solution(object):
     async def trigger_captcha(self) -> None:
         captcha_entry_frame = await self.page.wait_for_selector(self.entry_selector)
         captcha_entry_frame = await captcha_entry_frame.content_frame()
-        await captcha_entry_frame.click('#checkbox')
+        await captcha_entry_frame.locator('#checkbox').click(delay=random.uniform(50, 150))
         logger.debug('Click the captcha entry')
 
     async def verify_captcha(self):
@@ -81,19 +81,19 @@ class Solution(object):
             click_targets = await captcha_content_frame.locator('.task').element_handles()
             for recognized_index in recognized_indices:
                 await click_targets[recognized_index].click()
-                await self.page.wait_for_timeout(random())
+                await self.page.wait_for_timeout(random.random())
 
             # after all captcha clicked
             verify_button = await captcha_content_frame.wait_for_selector('.button-submit')
             if await verify_button.get_attribute("title") == "Next Challenge" or await verify_button.get_attribute(
                     "title") == "下一个挑战":
-                verify_button.click()
+                verify_button.click(delay=random.uniform(50, 150))
                 await self.verify_captcha()
             elif await verify_button.get_attribute("title") == "Verify Answers" or await verify_button.get_attribute(
                     "title") == "验证":
-                await verify_button.click()
+                await verify_button.click(delay=random.uniform(50, 150))
         else:
-            captcha_content_frame.click('.button-submit')
+            captcha_content_frame.click('.button-submit', delay=random.uniform(50, 150))
             await self.verify_captcha()
 
     async def resolve(self):

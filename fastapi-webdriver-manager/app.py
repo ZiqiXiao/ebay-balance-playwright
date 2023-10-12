@@ -128,8 +128,13 @@ async def start_browser(port: str):
             await asyncio.sleep(2 * random.uniform(1, 2))
             logger.debug(f'Working on start browser {retries + 1} times')
             this_proxy = OX_PROXY.copy()
-            this_proxy['server'] = this_proxy['server'] + str(random.randint(10001, 19999))
-            this_proxy['username'] = this_proxy['username'] + str(random.randint(20001, 29999))
+
+            # For Stickt Session
+            # this_proxy['server'] = this_proxy['server'] % str(random.randint(10001, 19999))
+            # this_proxy['username'] = this_proxy['username'] % str(random.randint(20001, 29999))
+
+            # For Time Specified Session
+            this_proxy['username'] = this_proxy['username'] % str(random.randint(20001, 29999))
             proxy_port = {'proxy': this_proxy.copy(), 'count': 4, 'port': port}
             logger.debug(proxy_port)
             scheduler = Scheduler(

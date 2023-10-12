@@ -89,8 +89,8 @@ class Scheduler(object):
         logger.info('Init Browser Success!')
 
     async def register_mission(self):
+
         async def captcha_handler(request):
-            nonlocal email
             async with captcha_semaphore:
                 if "https://www.ebay.com/captcha/init" in request.url:
                     logger.debug('Captcha Event Is Listened')
@@ -100,9 +100,10 @@ class Scheduler(object):
 
         logger.info('Start Register Mission...')
         self.page.on('request', captcha_handler)
+        
 
         await self.page.goto(SIGNIN_URL)
-        await self.page.click('#create-account-link')
+        await self.page.locator('#create-account-link').click(delay=random.uniform(50, 150), timeout=30000)
 
         def random_substring(s, max_length=6):
             if len(s) <= max_length:
@@ -124,7 +125,6 @@ class Scheduler(object):
 
         register = RegisterMission(self.page)
         await register.fill_info(email, password)
-        await register.fill_verification_code(email)
 
         login = LoginMission(self.page)
         await login.fill_personal_info()
