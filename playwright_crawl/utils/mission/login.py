@@ -89,7 +89,10 @@ class LoginMission(object):
         await self.page.wait_for_load_state('load')
         phone_no = await self.page.wait_for_selector('input[id="phoneFlagComp1"]')
         await phone_no.click(delay=random.uniform(50, 150))
-        await phone_no.type('319' + '400' + faker.msisdn()[9:], delay=random.uniform(50, 150))
+
+        phone_no_prefix = ['319400', '213555', '312555']
+
+        await phone_no.type( random.choice(my_list) + faker.msisdn()[9:], delay=random.uniform(50, 150))
         logger.debug('Phone Number Filled')
         
         await self.page.wait_for_timeout(random.random()*1000)

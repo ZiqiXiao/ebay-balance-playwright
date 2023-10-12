@@ -32,7 +32,7 @@ async def main(runing_loop=1):
             await scheduler.browser.close()
             fail += 1
         finally:
-            print('*' * 15 + f'Success: {success}, rate: {success/runing_loop}; Fail: {fail}, rate: {fail/runing_loop}')
+            print('*'*15 + f'Success: {success}, rate: {success/runing_loop}; Fail: {fail}, rate: {fail/runing_loop}'+'*'*15)
 
 if __name__ == '__main__':
-    asyncio.run(main(10))
+    asyncio.run(main(20))

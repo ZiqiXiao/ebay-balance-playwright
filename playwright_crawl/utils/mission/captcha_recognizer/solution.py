@@ -89,6 +89,7 @@ class Solution(object):
                     "title") == "下一个挑战":
                 verify_button.click(delay=random.uniform(50, 150))
                 await self.verify_captcha()
+
             elif await verify_button.get_attribute("title") == "Verify Answers" or await verify_button.get_attribute(
                     "title") == "验证":
                 await verify_button.click(delay=random.uniform(50, 150))
