@@ -49,7 +49,7 @@ OX_PROXY = {
     # "username": "customer-ziqix-sessid-%s",
 
     # Time Specified Session
-    "server": "https://pr.oxylabs.io:7777",
+    "server": "pr.oxylabs.io:7777",
     "username": "customer-ziqix-cc-us-sessid-%s-sesstime-10",
 
     "password": "Xzq062424"    

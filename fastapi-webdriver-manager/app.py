@@ -31,7 +31,7 @@ PORT_RENEW_INTERVAL = PORT_DISABLED_INTERVAL + 10
 r = Redis(host=REDIS_HOST, password='IamtheBest1!', db=0, decode_responses=True)
 
 
-async def run_command(cmd):
+async def run_command(cmd, wait_ouput=True):
     process = await asyncio.create_subprocess_shell(
         cmd,
         stdout=asyncio.subprocess.PIPE,
@@ -39,15 +39,18 @@ async def run_command(cmd):
     )
 
     stdout, stderr = await process.communicate()
-
-    if process.returncode == 0:
-        logger.debug(f'[{cmd!r} exited with {process.returncode}]')
-        logger.debug(stdout.decode().strip())
-        return True
+    
+    if wait_ouput:
+        if process.returncode == 0:
+            logger.debug(f'[{cmd!r} exited with {process.returncode}]')
+            logger.debug(stdout.decode().strip())
+            return True
+        else:
+            logger.debug(f'[{cmd!r} exited with {process.returncode}]')
+            logger.debug(stderr.decode().strip())
+            return False
     else:
-        logger.debug(f'[{cmd!r} exited with {process.returncode}]')
-        logger.debug(stderr.decode().strip())
-        return False
+        return process
 
 
 async def active_port_monitor():
@@ -58,7 +61,17 @@ async def active_port_monitor():
         for i in proxy_port_list:
             dict_i = json.loads(i[0])
             logger.debug(f'Found timeout port {dict_i["port"]}, and moving it to disabled_port')
+
+            scheduler = Scheduler(
+                headless=HDL,
+                proxy=dict_i['proxy'],
+                port=dict_i["port"],
+                reuse=True
+            )
+            await scheduler.close()
+            await scheduler.playwright.stop()
             await run_command(f"kill -9 $(lsof -t -i :{dict_i['port']})")
+
             await r.zadd('disabled_port', {json.dumps(dict_i): i[1]}, nx=True)
             await r.zrem('active_port', json.dumps(dict_i))
             break
@@ -138,15 +151,19 @@ async def start_browser(port: str):
 
             # For Time Specified Session
             this_proxy['username'] = this_proxy['username'] % str(random.randint(20001, 29999))
+
+
+            headless_option = "--headless" if HDL else ""
+            chrome_startup_cmd = f"""
+            chromium --proxy-server="https://{this_proxy['server']}:{this_proxy['username']}@{this_proxy['password']}" --remote-debugging-port={port} {headless_option}
+            """
+            await run_command(chrome_startup_cmd, False)
+            
             proxy_port = {'proxy': this_proxy.copy(), 'count': 4, 'port': port}
             logger.debug(proxy_port)
-            scheduler = Scheduler(
-                headless=HDL,
-                proxy=proxy_port['proxy'],
-                port=port,
-            )
-            await scheduler.init_browser()
-            await scheduler.register_mission()
+
+            # await scheduler.init_browser()
+            await Scheduler().register_mission(port=port)
 
             create_time = datetime.timestamp(datetime.now())
             proxy_port_str = json.dumps(proxy_port)
@@ -154,14 +171,8 @@ async def start_browser(port: str):
             return
             # return JSONResponse(status_code=status.HTTP_200_OK,
             #                     content={"status": "success", "message": "Web is ready!"})
-        except KeyboardInterrupt:
-            break
         except Exception as e:
             retries += 1
-            try:
-                await scheduler.browser.close()
-            except:
-                logger.debug('Scheduler is not created')
             logger.debug('Terminate Browser while start browser function')
             await run_command(f"kill -9 $(lsof -t -i :{port})")
             logger.debug(traceback.format_exc())

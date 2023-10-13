@@ -7,7 +7,7 @@ from typing import Optional
 from fake_headers import Headers
 from faker import Faker
 from loguru import logger
-from playwright.async_api import async_playwright, Page, Browser, Playwright
+from playwright.async_api import async_playwright, Page, Browser, Playwright, BrowserContext
 
 from playwright_crawl.config.settings import SIGNIN_URL, EMAIL_PASSWORD, ROOT_PATH
 from playwright_crawl.utils.mission.balance import CheckBalance
@@ -33,6 +33,7 @@ class Scheduler(object):
 
         self.playwright: Optional[Playwright] = None
         self.browser: Optional[Browser] = None
+        self.browser_context: Optional[BrowserContext] = None
         self.page: Optional[Page] = None
         self.faker: Faker = Faker()
 
@@ -42,7 +43,8 @@ class Scheduler(object):
         if self.reuse:
             logger.debug(f'Reuse browser on {self.port}')
             self.browser = await self.playwright.chromium.connect_over_cdp(f'http://localhost:{self.port}')
-            self.page = self.browser.contexts[0].pages[0]
+            self.browser_context = self.browser.contexts[0]
+            self.page = self.browser_context.pages[0]
         else:
             logger.debug(f'Start a new browser on {self.port}')
             self.browser = await self.playwright.chromium.launch(
@@ -73,7 +75,7 @@ class Scheduler(object):
 
             header = Headers()
             headers = header.generate()
-
+            self.browser_context = await self.browser.new_context()
             self.page = await self.browser.new_page(
                 viewport={"width": width, "height": height},
                 user_agent=headers['User-Agent'],
@@ -84,55 +86,109 @@ class Scheduler(object):
             )
 
         await stealth_async(self.page)
-        await self.page.route('**/*.{png,jpg,jpeg,svg,gif}', lambda route, _: route.abort())
         self.page.set_default_timeout(15000)
         logger.info('Init Browser Success!')
 
-    async def register_mission(self):
 
-        async def captcha_handler(request):
-            async with captcha_semaphore:
-                if "https://www.ebay.com/captcha/init" in request.url:
-                    logger.debug('Captcha Event Is Listened')
-                    await Solution(page=self.page).resolve()
+    async def register_mission(self, port):
 
-        captcha_semaphore = asyncio.Semaphore(1)
+        async with async_playwright() as playwright:
+            logger.debug(f'Start a new browser on {port}')
+            self.browser = await playwright.chromium.connect_over_cdp(f'http://localhost:{port}')
 
-        logger.info('Start Register Mission...')
-        self.page.on('request', captcha_handler)
-        
+            timezone_data = {
+                'America/New_York': {'latitude': (24.396308, 49.384358), 'longitude': (-125.000000, -66.934570)},
+                'America/Chicago': {'latitude': (26.347000, 49.384358), 'longitude': (-103.002565, -84.813335)},
+                'America/Denver': {'latitude': (31.332177, 49.000000), 'longitude': (-116.050003, -102.041524)},
+                'America/Los_Angeles': {'latitude': (32.534306, 49.000000), 'longitude': (-125.000000, -114.130470)}
+            }
 
-        await self.page.goto(SIGNIN_URL)
-        await self.page.locator('#create-account-link').click(delay=random.uniform(50, 150), timeout=30000)
+            timezone = list(timezone_data.keys())[
+                random.randint(0, len(timezone_data.keys()) - 1)]
 
-        def random_substring(s, max_length=6):
-            if len(s) <= max_length:
-                return s
-            start_index = random.randint(0, len(s) - 1 - max_length)
-            end_index = start_index + max_length
-            return s[start_index:end_index]
+            lat_range = timezone_data[timezone]['latitude']
+            long_range = timezone_data[timezone]['longitude']
 
-        # 生成两个随机的 email 本地部分
-        email_part1 = random_substring(self.faker.email().split('@')[0])
-        email_part2 = random_substring(self.faker.email().split('@')[0])
+            latitude = round(random.uniform(lat_range[0], lat_range[1]), 6)
+            longitude = round(random.uniform(long_range[0], long_range[1]), 6)
 
-        # 生成一个随机的5位数
-        random_number = str(random.randint(0, 99999))
+            width = random.randint(800, 900)
+            height = random.randint(800, 1080)
 
-        # 构建最终的 email 地址
-        email = email_part1 + email_part2 + random_number + '@nuyy.cc'
-        password = EMAIL_PASSWORD
+            header = Headers()
+            headers = header.generate()
+            self.browser_context = await self.browser.new_context()
+            self.page = await self.browser.new_page(
+                viewport={"width": width, "height": height},
+                user_agent=headers['User-Agent'],
+                timezone_id=timezone,
+                locale='en-US',
+                geolocation={'longitude': longitude, 'latitude': latitude},
+            )
 
-        register = RegisterMission(self.page)
-        await register.fill_info(email, password)
+            await stealth_async(self.page)
+            self.page.set_default_timeout(15000)
+            logger.info('Init Browser Success!')
 
-        login = LoginMission(self.page)
-        await login.fill_personal_info()
-        await self.page.wait_for_selector('input[id="redemption-code"]')
-        logger.info('Login Success!')
+
+            async def captcha_handler(request):
+                async with captcha_semaphore:
+                    if "https://www.ebay.com/captcha/init" in request.url:
+                        logger.debug('Captcha Event Is Listened')
+                        await Solution(page=self.page).resolve()
+
+            captcha_semaphore = asyncio.Semaphore(1)
+
+            logger.info('Start Register Mission...')
+            self.page.on('request', captcha_handler)
+            
+
+            await self.page.goto(SIGNIN_URL)
+            await self.page.locator('#create-account-link').click(delay=random.uniform(50, 150), timeout=30000)
+
+            def random_substring(s, max_length=6):
+                if len(s) <= max_length:
+                    return s
+                start_index = random.randint(0, len(s) - 1 - max_length)
+                end_index = start_index + max_length
+                return s[start_index:end_index]
+
+            # 生成两个随机的 email 本地部分
+            email_part1 = random_substring(self.faker.email().split('@')[0])
+            email_part2 = random_substring(self.faker.email().split('@')[0])
+
+            # 生成一个随机的5位数
+            random_number = str(random.randint(0, 99999))
+
+            # 构建最终的 email 地址
+            email = email_part1 + email_part2 + random_number + '@nuyy.cc'
+            password = EMAIL_PASSWORD
+
+            register = RegisterMission(self.page)
+            await register.fill_info(email, password)
+
+            login = LoginMission(self.page)
+            await login.fill_personal_info()
+            await self.page.wait_for_selector('input[id="redemption-code"]')
+            logger.info('Login Success!')
 
     async def check_balance(self, gift_card_no):
         logger.info('Checking balance')
         balance = await CheckBalance(self.page).check_balance(gift_card_no)
         logger.info(f'Balance is {balance}')
         return balance
+
+    async def close(self, with_browser=False):
+        
+        # if with_browser:
+        await self.browser_context.close()
+        logger.debug('Browser context closed')
+        await self.browser.close()
+        logger.debug('Browser closed')
+
+        # await self.playwright.stop()
+        # logger.debug('Playwright instance destroied')
+            
+        
+
+    
