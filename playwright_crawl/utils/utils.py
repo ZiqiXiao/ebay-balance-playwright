@@ -11,8 +11,6 @@ from loguru import logger
 from playwright_crawl.config.settings import DATA_FOLDER_PATH
 from playwright_crawl.config.settings import EMAIL_SERVER, EMAIL_PASSWORD, EMAIL_USERNAME
 
-ACCT_JSON_PATH = os.path.join(DATA_FOLDER_PATH, 'acct.json')
-
 
 async def get_acct_info(port: str = ''):
     r = redis.Redis(db=0, decode_responses=True)
@@ -39,7 +37,7 @@ async def save_acct_info(email: str = '', port: str = ''):
 def get_verification_code(
     keywords: str = 'Your eBay security code', 
     email: str = '', 
-    sleep_time: int = 3,
+    sleep_time: int = 2,
     max_retries: int = 5
     ):
     retries = 0
