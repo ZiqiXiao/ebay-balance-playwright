@@ -149,6 +149,7 @@ async def start_browser(port: str):
             create_time = datetime.timestamp(datetime.now(pytz.timezone('Asia/Shanghai')))
             proxy_port_str = json.dumps(proxy_port)
             await r.zadd('active_port', {proxy_port_str: create_time}, nx=True)
+            break
             
         except Exception as e:
             retries += 1

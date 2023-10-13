@@ -74,20 +74,16 @@ class LoginMission(object):
         if len(address[1]) > 4:
             address[1] = address[1][0:4]
         address = ' '.join(address)
-        address = '5th'
         await self.page.get_by_placeholder('Enter your street address').press_sequentially(address, delay=random.uniform(50, 150))
         logger.debug('Address Filled')
 
         while True:
-            # 检查addressSugg_listitem0下是否有一个div元素，其类名为address-count
-            has_address_count = await self.page.locator('#addressSugg_listitem0').locator('div.address-count').all()
-            print(has_address_count)
-            # 点击addressSugg_listitem0并稍等片刻
-            await self.page.wait_for_timeout(2000)
-            await self.page.locator('#addressSugg_listitem0').click(delay=random.uniform(50, 150))
-            # 如果没有这样的div元素，就退出循环
-            if len(has_address_count) == 0:
-                print('The last address found!')
+            # 尝试获取address-count元素
+            address_count_element = self.page.locator('#addressSugg_listitem0 > div.address-count').first
+            print(address_count_element)
+            try:
+                await self.page.locator('#addressSugg_listitem0').click(delay=random.uniform(50, 150), timeout=1000)
+            except:
                 break
             
         logger.debug('Address Selected')
@@ -96,7 +92,7 @@ class LoginMission(object):
 
         phone_no_prefix = ['319400', '213555', '312555']
 
-        await phone_no.press_sequentially( random.choice(phone_no_prefix) + faker.msisdn()[9:], delay=random.uniform(50, 150))
+        await phone_no.type( random.choice(phone_no_prefix) + faker.msisdn()[9:], delay=random.uniform(50, 150))
         logger.debug('Phone Number Filled')
         
         await self.page.wait_for_timeout(random.random()*1000)

@@ -39,8 +39,8 @@ class Solution(object):
             single_captcha_element_url = match_result.group(1).replace('imgs2.hcaptcha.com',
                                                                        'imgs.hcaptcha.com') if match_result else None
 
-            logger.debug(
-                f'single_captcha_element_url {single_captcha_element_url}')
+            # logger.debug(
+                # f'single_captcha_element_url {single_captcha_element_url}')
 
             with open(CAPTCHA_SINGLE_IMAGE_FILE_PATH % (i,), 'wb') as f:
                 f.write(requests.get(single_captcha_element_url).content)
@@ -50,8 +50,8 @@ class Solution(object):
             resized_single_captcha_base64_strings.append(
                 resized_single_captcha_base64_string)
 
-        logger.debug(
-            f'length of single_captcha_element_urls {len(resized_single_captcha_base64_strings)}')
+        # logger.debug(
+            # f'length of single_captcha_element_urls {len(resized_single_captcha_base64_strings)}')
 
         task_text = await captcha_content_frame.wait_for_selector('.prompt-text')
         task_text = await task_text.text_content()
