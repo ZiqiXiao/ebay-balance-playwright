@@ -5,6 +5,7 @@ import random
 import traceback
 from contextlib import asynccontextmanager
 from datetime import datetime
+import pytz
 
 from fastapi import FastAPI, status
 from fastapi.responses import JSONResponse
@@ -68,6 +69,7 @@ async def active_port_monitor():
                 scheduler = pw_inst[dict_i["port"]]
                 await scheduler.close()
                 scheduler = None
+                logger.info(f'Browser of port {dict_i["port"]} is closed and related PW instance is cleared.')
 
             await r.zadd('disabled_port', {json.dumps(dict_i): i[1]}, nx=True)
             await r.zrem('active_port', json.dumps(dict_i))
@@ -80,8 +82,6 @@ async def renew_port_monitor():
         proxy = json.loads(proxy_str)
         logger.debug(f'Processing {proxy}')
         await start_browser(proxy["port"])
-
-        logger.info(f'Browser of port {proxy["port"]} is closed')
 
     while True:
         disable_proxy_port_list = [i for i in await r.zrange('disabled_port', 0, -1, withscores=True)
@@ -103,10 +103,7 @@ async def init_start_browser(port, wait_time=10):
 @asynccontextmanager
 @logger.catch
 async def lifespan(app: FastAPI):
-    """
-    初始化Redis中关于active_port的部分。准备4个端口
-    :return:
-    """
+
     await r.flushall()
 
     await asyncio.gather(*[init_start_browser(port, index*30) for index, port in enumerate(PORT_LIST)])
@@ -148,7 +145,7 @@ async def start_browser(port: str):
             await scheduler.register_mission()
             pw_inst[port] = scheduler
 
-            create_time = datetime.timestamp(datetime.now())
+            create_time = datetime.timestamp(datetime.now(pytz.timezone('Asia/Shanghai')))
             proxy_port_str = json.dumps(proxy_port)
             await r.zadd('active_port', {proxy_port_str: create_time}, nx=True)
             
