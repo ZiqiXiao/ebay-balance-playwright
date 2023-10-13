@@ -18,6 +18,7 @@ PORT_LIST = os.environ.get('PORTS', '').split(',')
 LOG_NAME = os.environ.get('LOG_NAME', 'logs')
 REDIS_HOST = os.environ.get('REDIS_HOST', 'localhost')
 HDL = os.environ.get('HEADLESS', HEADLESS)
+
 if HDL.lower() == 'true':
     HDL = True
 else:
@@ -29,6 +30,7 @@ PORT_DISABLED_INTERVAL = 600
 PORT_RENEW_INTERVAL = PORT_DISABLED_INTERVAL + 10
 
 r = Redis(host=REDIS_HOST, password='IamtheBest1!', db=0, decode_responses=True)
+pw_inst = {}
 
 
 async def run_command(cmd, wait_ouput=True):
@@ -37,10 +39,10 @@ async def run_command(cmd, wait_ouput=True):
         stdout=asyncio.subprocess.PIPE,
         stderr=asyncio.subprocess.PIPE
     )
-
-    stdout, stderr = await process.communicate()
     
     if wait_ouput:
+        stdout, stderr = await process.communicate()
+
         if process.returncode == 0:
             logger.debug(f'[{cmd!r} exited with {process.returncode}]')
             logger.debug(stdout.decode().strip())
@@ -62,15 +64,10 @@ async def active_port_monitor():
             dict_i = json.loads(i[0])
             logger.debug(f'Found timeout port {dict_i["port"]}, and moving it to disabled_port')
 
-            scheduler = Scheduler(
-                headless=HDL,
-                proxy=dict_i['proxy'],
-                port=dict_i["port"],
-                reuse=True
-            )
-            await scheduler.close()
-            await scheduler.playwright.stop()
-            await run_command(f"kill -9 $(lsof -t -i :{dict_i['port']})")
+            if pw_inst.get(dict_i["port"]):
+                scheduler = pw_inst[dict_i["port"]]
+                await scheduler.close()
+                scheduler = None
 
             await r.zadd('disabled_port', {json.dumps(dict_i): i[1]}, nx=True)
             await r.zrem('active_port', json.dumps(dict_i))
@@ -94,7 +91,6 @@ async def renew_port_monitor():
 
         if len(disable_proxy_port_list) > 0:
             for i in disable_proxy_port_list:
-                # await renew_browser(i[0])
                 await r.zrem('disabled_port', json.dumps(json.loads(i[0])))
                 asyncio.create_task(renew_browser(i[0]))
 
@@ -113,7 +109,7 @@ async def lifespan(app: FastAPI):
     """
     await r.flushall()
 
-    await asyncio.gather(*[init_start_browser(port, index*20) for index, port in enumerate(PORT_LIST)])
+    await asyncio.gather(*[init_start_browser(port, index*30) for index, port in enumerate(PORT_LIST)])
 
     active_port_monitor_task = asyncio.create_task(active_port_monitor())
     renew_port_monitor_task = asyncio.create_task(renew_port_monitor())
@@ -127,14 +123,7 @@ async def lifespan(app: FastAPI):
 
 app = FastAPI(lifespan=lifespan)
 
-
-@app.get("/hello")
-async def hello():
-    return JSONResponse(status_code=status.HTTP_200_OK,
-                        content={"status": "success", "message": "Hello World!"})
-
-
-@app.get("/start-browser")
+# @app.get("/start-browser")
 async def start_browser(port: str):
     max_retries = 10
     retries = 0
@@ -145,41 +134,40 @@ async def start_browser(port: str):
             logger.debug(f'Working on start browser {retries + 1} times')
             this_proxy = OX_PROXY.copy()
 
-            # For Stickt Session
-            # this_proxy['server'] = this_proxy['server'] % str(random.randint(10001, 19999))
-            # this_proxy['username'] = this_proxy['username'] % str(random.randint(20001, 29999))
-
             # For Time Specified Session
             this_proxy['username'] = this_proxy['username'] % str(random.randint(20001, 29999))
-
-
-            headless_option = "--headless" if HDL else ""
-            chrome_startup_cmd = f"""
-            chromium --proxy-server="https://{this_proxy['server']}:{this_proxy['username']}@{this_proxy['password']}" --remote-debugging-port={port} {headless_option}
-            """
-            await run_command(chrome_startup_cmd, False)
             
             proxy_port = {'proxy': this_proxy.copy(), 'count': 4, 'port': port}
             logger.debug(proxy_port)
 
-            # await scheduler.init_browser()
-            await Scheduler().register_mission(port=port)
+            scheduler = Scheduler(
+                headless=HDL,
+                proxy=this_proxy,
+                port=port
+            )
+            await scheduler.init_browser()
+            await scheduler.register_mission()
+            
 
             create_time = datetime.timestamp(datetime.now())
             proxy_port_str = json.dumps(proxy_port)
             await r.zadd('active_port', {proxy_port_str: create_time}, nx=True)
-            return
-            # return JSONResponse(status_code=status.HTTP_200_OK,
-            #                     content={"status": "success", "message": "Web is ready!"})
+            pw_inst[port] = scheduler
+
         except Exception as e:
             retries += 1
             logger.debug('Terminate Browser while start browser function')
-            await run_command(f"kill -9 $(lsof -t -i :{port})")
+            if 'scheduler' in locals():
+                await scheduler.playwright.stop()
+            if pw_inst.get(port):
+                 pw_inst[port] = None
             logger.debug(traceback.format_exc())
 
-            # return JSONResponse(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            #                     content={"status": "error", "message": str(e)})
 
+@app.get("/hello")
+async def hello():
+    return JSONResponse(status_code=status.HTTP_200_OK,
+                        content={"status": "success", "message": "Hello World!"})
 
 @app.get('/check-balance')
 @logger.catch
@@ -197,13 +185,8 @@ async def check_balance(gift_card_no: str):
             dict_i = json.loads(i[0])
             logger.debug(f'Using {dict_i}')
 
-            scheduler = Scheduler(
-                headless=HDL,
-                proxy=dict_i['proxy'],
-                port=dict_i['port'],
-                reuse=True
-            )
-            await scheduler.init_browser()
+            if pw_inst.get(dict_i['port']):
+                scheduler = pw_inst[dict_i['port']]
             balance = await scheduler.check_balance(gift_card_no)
 
             # 更新proxy的count，重新加入active_port
