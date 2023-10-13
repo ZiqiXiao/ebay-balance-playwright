@@ -15,7 +15,7 @@ from playwright_crawl.config.settings import EMAIL_SERVER, EMAIL_PASSWORD, EMAIL
 async def get_acct_info(port: str = ''):
     r = redis.Redis(db=0, decode_responses=True)
     user_list = [i for i in await r.zrange('valid_users', 0, -1, desc=True, withscores=True) if datetime.timestamp(
-        datetime.now()) - i[1] < 600 and port in json.loads(i[0])['port']]
+        datetime.now(pytz.timezone('Asia/Shanghai'))) - i[1] < 600 and port in json.loads(i[0])['port']]
     logger.debug(user_list)
     for user in user_list:
         await r.zrem('valid_users', json.dumps(json.loads(user[0])))
@@ -24,7 +24,7 @@ async def get_acct_info(port: str = ''):
 
 
 async def save_acct_info(email: str = '', port: str = ''):
-    register_time = datetime.timestamp(datetime.now())
+    register_time = datetime.timestamp(datetime.now(pytz.timezone('Asia/Shanghai')))
     r = redis.Redis(db=0)
     user_info = {
         'email': email,

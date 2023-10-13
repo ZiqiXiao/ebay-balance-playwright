@@ -22,7 +22,7 @@ class Scheduler(object):
                  headless: bool = False,
                  proxy: dict = None,
                  port: str = None,
-                 reuse: bool = False,):
+                 reuse: bool = False):
 
         self.session_storage = None
         self.local_storage = None

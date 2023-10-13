@@ -131,3 +131,4 @@ websocket-client==1.6.3
 Werkzeug==2.3.7
 widgetsnbextension==4.0.9
 yarl==1.9.2
+pytz==2023.3.post1

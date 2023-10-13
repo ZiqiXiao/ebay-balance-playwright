@@ -96,7 +96,7 @@ class LoginMission(object):
 
         phone_no_prefix = ['319400', '213555', '312555']
 
-        await phone_no.type( random.choice(phone_no_prefix) + faker.msisdn()[9:], delay=random.uniform(50, 150))
+        await phone_no.press_sequentially( random.choice(phone_no_prefix) + faker.msisdn()[9:], delay=random.uniform(50, 150))
         logger.debug('Phone Number Filled')
         
         await self.page.wait_for_timeout(random.random()*1000)

@@ -60,7 +60,7 @@ async def active_port_monitor():
     while True:
         proxy_port_list = [i for i in await r.zrange('active_port', 0, -1, desc=True, withscores=True)
                            if json.loads(i[0])['port'] in PORT_LIST and
-                           (json.loads(i[0])['count'] < 1 or (datetime.timestamp(datetime.now()) - i[1]) > PORT_DISABLED_INTERVAL)]
+                           (json.loads(i[0])['count'] < 1 or (datetime.timestamp(datetime.now(pytz.timezone('Asia/Shanghai'))) - i[1]) > PORT_DISABLED_INTERVAL)]
         for i in proxy_port_list:
             dict_i = json.loads(i[0])
             logger.debug(f'Found timeout port {dict_i["port"]}, and moving it to disabled_port')
@@ -86,7 +86,7 @@ async def renew_port_monitor():
     while True:
         disable_proxy_port_list = [i for i in await r.zrange('disabled_port', 0, -1, withscores=True)
                                    if json.loads(i[0])['port'] in PORT_LIST and
-                                   ((datetime.timestamp(datetime.now()) - i[1]) > PORT_RENEW_INTERVAL or
+                                   ((datetime.timestamp(datetime.now(pytz.timezone('Asia/Shanghai'))) - i[1]) > PORT_RENEW_INTERVAL or
                                     json.loads(i[0])['count'] < 1)]
 
         if len(disable_proxy_port_list) > 0:
@@ -141,9 +141,10 @@ async def start_browser(port: str):
                 proxy=this_proxy,
                 port=port
             )
+            pw_inst[port] = scheduler
             await scheduler.init_browser()
             await scheduler.register_mission()
-            pw_inst[port] = scheduler
+            
 
             create_time = datetime.timestamp(datetime.now(pytz.timezone('Asia/Shanghai')))
             proxy_port_str = json.dumps(proxy_port)
