@@ -124,6 +124,7 @@ app = FastAPI(lifespan=lifespan)
 async def start_browser(port: str):
     max_retries = 10
     retries = 0
+    scheduler = None
 
     while retries < max_retries:
         try:
@@ -157,8 +158,10 @@ async def start_browser(port: str):
             logger.debug('Terminate Browser while start browser function')
             if pw_inst.get(port):
                  pw_inst[port] = None
-            if 'scheduler' in locals():
-                await scheduler.playwright.stop()
+            try:
+                await scheduler.close()
+            except:
+                pass
             logger.debug(traceback.format_exc())
 
 
