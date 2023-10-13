@@ -75,7 +75,8 @@ class LoginMission(object):
             address[1] = address[1][0:4]
         address = ' '.join(address)
         address = '5th'
-        await address_input.press_sequentially(self.page.locator('input[id="addressSugg"]'), delay=random.uniform(50, 150))
+        address_locator = await self.page.get_by_placeholder('Enter your street address')
+        await .press_sequentially(address, delay=random.uniform(50, 150))
         logger.debug('Address Filled')
 
         while True:
