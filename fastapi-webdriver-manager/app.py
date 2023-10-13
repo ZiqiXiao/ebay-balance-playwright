@@ -141,9 +141,10 @@ async def start_browser(port: str):
                 proxy=this_proxy,
                 port=port
             )
-            pw_inst[port] = scheduler
+            
             await scheduler.init_browser()
             await scheduler.register_mission()
+            pw_inst[port] = scheduler
             
 
             create_time = datetime.timestamp(datetime.now(pytz.timezone('Asia/Shanghai')))
@@ -154,10 +155,10 @@ async def start_browser(port: str):
         except Exception as e:
             retries += 1
             logger.debug('Terminate Browser while start browser function')
-            if 'scheduler' in locals():
-                await scheduler.playwright.stop()
             if pw_inst.get(port):
                  pw_inst[port] = None
+            if 'scheduler' in locals():
+                await scheduler.playwright.stop()
             logger.debug(traceback.format_exc())
 
 
