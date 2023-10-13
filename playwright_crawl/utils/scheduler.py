@@ -76,13 +76,14 @@ class Scheduler(object):
             header = Headers()
             headers = header.generate()
 
-            self.page = await self.browser.new_page(
+            self.browser_context = await self.browser.new_context(
                 viewport={"width": width, "height": height},
                 user_agent=headers['User-Agent'],
                 timezone_id=timezone,
                 locale='en-US',
                 geolocation={'longitude': longitude, 'latitude': latitude},
             )
+            self.page = await self.browser_context.new_page()
 
         await stealth_async(self.page)
         self.page.set_default_timeout(15000)
@@ -141,6 +142,7 @@ class Scheduler(object):
         return balance
 
     async def close(self):
+        await self.browser_context.close()
         await self.browser.close()
         await self.playwright.stop()
         logger.debug('Playwright instance destroied')

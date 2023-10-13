@@ -49,25 +49,26 @@ class RegisterMission(object):
         logger.debug('Submit Clicked')
         logger.info('Register Info Submitted')
 
-        async with self.page.expect_response(lambda response: response.url == "https://signup.ebay.com/ajax/submit") as response_info:
-            actual_response = await response_info.value  # Access the actual response object
-            response_data = await actual_response.json()
-            print(response_data)
-            print(type(response_data))
-            if response_data.get("isRiskInitiated"):
-                logger.debug('Risk initiated, fetching verification code...')
-                await self.fill_verification_code(email=email)
-            if response_data.get('errorMessage'):
-                if response_data.get('errorMessage').get('text') == 'Oops, we ran into a problem. Try again later.':
-                    await self.page.locator('input[id="password"]').click(delay=random.uniform(50, 150))
-                    await self.page.type('input[id="password"]', password)
-                    await self.page.wait_for_timeout(random.random() * 2000)
-                    logger.debug('Password Filled')
-                    
-                    await self.page.locator('#EMAIL_REG_FORM_SUBMIT').click(delay=random.uniform(50, 150))
-                    await self.page.wait_for_timeout(random.random() * 1000)
-                    logger.debug('Submit Clicked')
-                    logger.info('Register Info Submitted')
+        try:
+            async with self.page.expect_response(lambda response: response.url == "https://signup.ebay.com/ajax/submit") as response_info:
+                actual_response = await response_info.value  # Access the actual response object
+                response_data = await actual_response.json()
+                if response_data.get("isRiskInitiated"):
+                    logger.debug('Risk initiated, fetching verification code...')
+                    await self.fill_verification_code(email=email)
+                if response_data.get('errorMessage'):
+                    if response_data.get('errorMessage').get('text') == 'Oops, we ran into a problem. Try again later.':
+                        await self.page.locator('input[id="password"]').click(delay=random.uniform(50, 150))
+                        await self.page.type('input[id="password"]', password)
+                        await self.page.wait_for_timeout(random.random() * 2000)
+                        logger.debug('Password Filled')
+                        
+                        await self.page.locator('#EMAIL_REG_FORM_SUBMIT').click(delay=random.uniform(50, 150))
+                        await self.page.wait_for_timeout(random.random() * 1000)
+                        logger.debug('Submit Clicked')
+                        logger.info('Register Info Submitted')
+        except:
+            raise Exception("Dosen't hear back after from submitting register info!")
 
     async def fill_verification_code(self, email: str = ''):
         vcode: str | None = await get_verification_code_async(email=email)

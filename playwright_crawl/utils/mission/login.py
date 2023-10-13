@@ -74,6 +74,7 @@ class LoginMission(object):
         if len(address[1]) > 4:
             address[1] = address[1][0:4]
         address = ' '.join(address)
+        address = '5th'
         await self.page.locator('input[id="addressSugg"]').click(delay=random.uniform(50, 150))
         for i in address:
             await self.page.keyboard.down(i)
@@ -83,9 +84,19 @@ class LoginMission(object):
 
         await self.page.wait_for_timeout(random.random() * 2000)
 
-        await self.page.locator('#addressSugg_listitem0').click(delay=random.uniform(50, 150))
+        while True:
+            # 检查addressSugg_listitem0下是否有一个div元素，其类名为address-count
+            has_address_count = await self.page.locator('#addressSugg_listitem0').locator('div.address-count').all()
+            print(has_address_count)
+            # 点击addressSugg_listitem0并稍等片刻
+            await self.page.wait_for_timeout(2000)
+            await self.page.locator('#addressSugg_listitem0').click(delay=random.uniform(50, 150))
+            # 如果没有这样的div元素，就退出循环
+            if len(has_address_count) == 0:
+                break
+            
+        
         logger.debug('Address Selected')
-
         await self.page.wait_for_load_state('load')
         phone_no = await self.page.wait_for_selector('input[id="phoneFlagComp1"]')
         await phone_no.click(delay=random.uniform(50, 150))

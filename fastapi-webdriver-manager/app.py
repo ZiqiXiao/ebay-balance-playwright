@@ -130,7 +130,6 @@ async def start_browser(port: str):
 
     while retries < max_retries:
         try:
-            await asyncio.sleep(2 * random.uniform(1, 2))
             logger.debug(f'Working on start browser {retries + 1} times')
             this_proxy = OX_PROXY.copy()
 
@@ -147,13 +146,12 @@ async def start_browser(port: str):
             )
             await scheduler.init_browser()
             await scheduler.register_mission()
-            
+            pw_inst[port] = scheduler
 
             create_time = datetime.timestamp(datetime.now())
             proxy_port_str = json.dumps(proxy_port)
             await r.zadd('active_port', {proxy_port_str: create_time}, nx=True)
-            pw_inst[port] = scheduler
-
+            
         except Exception as e:
             retries += 1
             logger.debug('Terminate Browser while start browser function')
