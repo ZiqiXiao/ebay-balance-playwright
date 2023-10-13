@@ -107,8 +107,6 @@ class Scheduler(object):
         await self.page.goto(SIGNIN_URL)
         await self.page.locator('#create-account-link').click(delay=random.uniform(50, 150), timeout=30000)
 
-        # await self.browser.contexts[0].close()
-
         def random_substring(s, max_length=6):
             if len(s) <= max_length:
                 return s
