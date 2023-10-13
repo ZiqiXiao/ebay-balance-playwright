@@ -80,7 +80,6 @@ class LoginMission(object):
         while True:
             # 尝试获取address-count元素
             address_count_element = self.page.locator('#addressSugg_listitem0 > div.address-count').first
-            print(address_count_element)
             try:
                 await self.page.locator('#addressSugg_listitem0').click(delay=random.uniform(50, 150), timeout=1000)
             except:
