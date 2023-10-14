@@ -19,12 +19,15 @@ PORT_LIST = os.environ.get('PORTS', '').split(',')
 LOG_NAME = os.environ.get('LOG_NAME', 'logs')
 REDIS_HOST = os.environ.get('REDIS_HOST', 'localhost')
 HDL = os.environ.get('HEADLESS', HEADLESS)
+ENV = os.environ.get('HEADLESS', 'dev')
 
 if HDL.lower() == 'true':
     HDL = True
 else:
     HDL = False
 
+if ENV.lower()== 'prod':
+    logger.remove(0)
 logger.add(os.path.join('logs', LOG_NAME), rotation="1 day", retention="7 days", level='DEBUG')
 
 PORT_DISABLED_INTERVAL = 600
