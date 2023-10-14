@@ -109,7 +109,7 @@ async def lifespan(app: FastAPI):
 
     await r.flushall()
 
-    await asyncio.gather(*[init_start_browser(port, index*30) for index, port in enumerate(PORT_LIST)])
+    await asyncio.gather(*[init_start_browser(port, index*60) for index, port in enumerate(PORT_LIST)])
 
     active_port_monitor_task = asyncio.create_task(active_port_monitor())
     renew_port_monitor_task = asyncio.create_task(renew_port_monitor())
