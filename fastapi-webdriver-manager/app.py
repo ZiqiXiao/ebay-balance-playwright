@@ -12,7 +12,7 @@ from fastapi.responses import JSONResponse
 from loguru import logger
 from redis.asyncio import Redis
 
-from playwright_crawl.config.settings import OX_PROXY, HEADLESS
+from playwright_crawl.config.settings import OX_PROXY, SM_PROXY, HEADLESS
 from playwright_crawl.utils.scheduler import Scheduler
 
 PORT_LIST = os.environ.get('PORTS', '').split(',')
@@ -132,11 +132,13 @@ async def start_browser(port: str):
     while retries < max_retries:
         try:
             logger.debug(f'Working on start browser {retries + 1} times')
-            this_proxy = OX_PROXY.copy()
 
-            # For Time Specified Session
-            this_proxy['server'] = this_proxy['server'] % str(random.randint(10001, 10999))
-            # this_proxy['username'] = this_proxy['username'] % str(random.randint(20001, 29999))
+            if ENV.lower()== 'prod':
+                this_proxy = SM_PROXY.copy()
+                this_proxy['server'] = this_proxy['server'] % str(random.randint(10001, 10999))
+            else:
+                this_proxy = OX_PROXY.copy()
+                this_proxy['username'] = this_proxy['username'] % str(random.randint(20001, 29999))
             
             proxy_port = {'proxy': this_proxy.copy(), 'count': 4, 'port': port}
             logger.debug(proxy_port)
@@ -151,7 +153,6 @@ async def start_browser(port: str):
             await scheduler.register_mission()
             pw_inst[port] = scheduler
             
-
             create_time = datetime.timestamp(datetime.now(pytz.timezone('Asia/Shanghai')))
             proxy_port_str = json.dumps(proxy_port)
             await r.zadd('active_port', {proxy_port_str: create_time}, nx=True)

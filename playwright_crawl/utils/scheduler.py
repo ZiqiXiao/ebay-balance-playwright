@@ -87,6 +87,15 @@ class Scheduler(object):
 
         await stealth_async(self.page)
         self.page.set_default_timeout(15000)
+
+        excluded_resource_types = ["stylesheet", "image", "font"] 
+        async def block_aggressively(route): 
+            if (route.request.resource_type in excluded_resource_types): 
+                await route.abort() 
+            else: 
+                await route.continue_() 
+        await self.page.route("**/*", block_aggressively) 
+
         logger.info('Init Browser Success!')
 
 
