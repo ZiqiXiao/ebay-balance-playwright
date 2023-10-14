@@ -135,7 +135,8 @@ async def start_browser(port: str):
             this_proxy = OX_PROXY.copy()
 
             # For Time Specified Session
-            this_proxy['username'] = this_proxy['username'] % str(random.randint(20001, 29999))
+            this_proxy['server'] = this_proxy['server'] % str(random.randint(10001, 10999))
+            # this_proxy['username'] = this_proxy['username'] % str(random.randint(20001, 29999))
             
             proxy_port = {'proxy': this_proxy.copy(), 'count': 4, 'port': port}
             logger.debug(proxy_port)

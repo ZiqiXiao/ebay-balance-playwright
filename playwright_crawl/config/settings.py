@@ -45,11 +45,18 @@ CAPTCHA_RESOLVER_API_KEY = env.str("CAPTCHA_RESOLVER_API_KEY")
 Proxy
 """
 OX_PROXY = {
+    # OX
     # Time Specified Session
-    "server": "https://pr.oxylabs.io:7777",
-    "username": "customer-ziqix-cc-us-sessid-%s-sesstime-10",
+    # "server": "https://pr.oxylabs.io:7777",
+    # "username": "customer-ziqix-cc-us-sessid-%s-sesstime-10",
+    # "password": "Xzq062424"
 
-    "password": "Xzq062424"    
+    #SP
+    "server": "https://us.smartproxy.com:%s",
+    "username": "sp81ef6au1",
+    "password": "60qlvhIgvOi13zvGvA"
 }
+
+
 
 HEADLESS = "True"
