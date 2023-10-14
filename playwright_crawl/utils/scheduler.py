@@ -89,12 +89,14 @@ class Scheduler(object):
         self.page.set_default_timeout(15000)
 
         excluded_resource_types = ["stylesheet", "image", "font"] 
-        async def block_aggressively(route): 
-            if (route.request.resource_type in excluded_resource_types): 
+        async def block_aggressively(route, request): 
+            if "hcaptcha" in request.url:
+                await route.continue_()
+            elif request.resource_type in excluded_resource_types: 
                 await route.abort() 
             else: 
                 await route.continue_() 
-        await self.page.route("**/*", block_aggressively) 
+        await self.page.route("**/*", block_aggressively)
 
         logger.info('Init Browser Success!')
 
