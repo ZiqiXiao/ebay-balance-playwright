@@ -86,13 +86,10 @@ class Scheduler(object):
             self.page = await self.browser_context.new_page()
 
         await stealth_async(self.page)
-        self.page.set_default_timeout(15000)
 
         excluded_resource_types = ["stylesheet", "image", "font"] 
         async def block_aggressively(route, request): 
-            if "hcaptcha" in request.url:
-                await route.continue_()
-            elif request.resource_type in excluded_resource_types: 
+            if request.resource_type in excluded_resource_types and "hcaptcha" not in request.url: 
                 await route.abort() 
             else: 
                 await route.continue_() 
@@ -116,7 +113,7 @@ class Scheduler(object):
         
 
         await self.page.goto(SIGNIN_URL)
-        await self.page.locator('#create-account-link').click(delay=random.uniform(50, 150), timeout=30000)
+        await self.page.locator('#create-account-link').click(delay=random.uniform(50, 150), timeout=15000)
 
         def random_substring(s, max_length=6):
             if len(s) <= max_length:
