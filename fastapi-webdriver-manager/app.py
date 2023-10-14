@@ -19,7 +19,7 @@ PORT_LIST = os.environ.get('PORTS', '').split(',')
 LOG_NAME = os.environ.get('LOG_NAME', 'logs')
 REDIS_HOST = os.environ.get('REDIS_HOST', 'localhost')
 HDL = os.environ.get('HEADLESS', HEADLESS)
-ENV = os.environ.get('HEADLESS', 'dev')
+ENV = os.environ.get('ENV', 'dev')
 
 if HDL.lower() == 'true':
     HDL = True
