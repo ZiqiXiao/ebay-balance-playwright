@@ -133,14 +133,14 @@ async def start_browser(port: str):
     while retries < max_retries:
         try:
             logger.debug(f'Working on start browser {retries + 1} times')
-
-            if PROXY_CHOICE.lower()== 'BD_PROXY':
+            print(PROXY_CHOICE)
+            if PROXY_CHOICE.lower() == 'bd_proxy':
                 this_proxy = BD_PROXY.copy()
                 this_proxy['username'] = this_proxy['username'] % str(random.randint(20001, 29999))
-            elif PROXY_CHOICE.lower()== 'SM_PROXY':
+            elif PROXY_CHOICE.lower() == 'sm_proxy':
                 this_proxy = SM_PROXY.copy()
                 this_proxy['server'] = this_proxy['server'] % str(random.randint(10001, 10999))
-            elif PROXY_CHOICE.lower()== 'OX_PROXY':
+            elif PROXY_CHOICE.lower() == 'ox_proxy':
                 this_proxy = OX_PROXY.copy()
                 this_proxy['username'] = this_proxy['username'] % str(random.randint(20001, 29999))
             
