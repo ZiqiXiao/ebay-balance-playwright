@@ -12,7 +12,7 @@ from fastapi.responses import JSONResponse
 from loguru import logger
 from redis.asyncio import Redis
 
-from playwright_crawl.config.settings import OX_PROXY, SM_PROXY, HEADLESS
+from playwright_crawl.config.settings import OX_PROXY, SM_PROXY, BD_PROXY, HEADLESS
 from playwright_crawl.utils.scheduler import Scheduler
 
 PORT_LIST = os.environ.get('PORTS', '').split(',')
@@ -137,7 +137,8 @@ async def start_browser(port: str):
                 this_proxy = SM_PROXY.copy()
                 this_proxy['server'] = this_proxy['server'] % str(random.randint(10001, 10999))
             else:
-                this_proxy = OX_PROXY.copy()
+                # this_proxy = OX_PROXY.copy()
+                this_proxy = BD_PROXY.copy()
                 this_proxy['username'] = this_proxy['username'] % str(random.randint(20001, 29999))
             
             proxy_port = {'proxy': this_proxy.copy(), 'count': 4, 'port': port}

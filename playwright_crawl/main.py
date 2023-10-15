@@ -6,7 +6,7 @@ sys.path.append('/workspace/ebay-balance-playwright')
 import traceback
 
 
-from playwright_crawl.config.settings import OX_PROXY, DATA_FOLDER_PATH
+from playwright_crawl.config.settings import OX_PROXY, BD_PROXY, DATA_FOLDER_PATH
 from playwright_crawl.utils.scheduler import Scheduler
 
 
@@ -15,7 +15,8 @@ async def main(runing_loop=1):
     fail = 0
     for i in range(runing_loop):
         try:
-            this_proxy = OX_PROXY.copy()
+            # this_proxy = OX_PROXY.copy()
+            this_proxy = BD_PROXY.copy()
             this_proxy['username'] = this_proxy['username'] % str(random.randint(20001, 29999))
             proxy_port = {'proxy': this_proxy.copy(), 'count': 4, 'port': '26600'}
             scheduler = Scheduler(

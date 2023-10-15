@@ -58,6 +58,12 @@ OX_PROXY = {
     "password": "Xzq062424"
 }
 
+BD_PROXY = {
+    # BD
+    "server": "https://brd.superproxy.io:22225",
+    "username": "brd-customer-hl_5983915f-zone-data_center-country-us-session-%s",
+    "password": "davfq3o37mhs"
+}
 
 
 HEADLESS = "True"
