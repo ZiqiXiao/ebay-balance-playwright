@@ -42,7 +42,7 @@ def get_verification_code(
     max_retries: int = 5
     ):
     retries = 0
-
+    time.sleep(4)
     while retries <= max_retries:
         logger.debug(f'Start Get Verification Code...')
         # 连接到 IMAP 服务器
