@@ -70,7 +70,7 @@ class Scheduler(object):
             latitude = round(random.uniform(lat_range[0], lat_range[1]), 6)
             longitude = round(random.uniform(long_range[0], long_range[1]), 6)
 
-            width = random.randint(800, 900)
+            width = random.randint(1200, 1800)
             height = random.randint(800, 1080)
 
             header = Headers()
