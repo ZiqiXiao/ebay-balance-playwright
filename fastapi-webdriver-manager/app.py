@@ -168,6 +168,8 @@ async def start_browser(port: str):
             if pw_inst.get(port):
                  pw_inst[port] = None
             try:
+                with open(f"logs/error_page_{datetime.now()}.html", w) as f:
+                    f.write(scheduler.page.content())
                 await scheduler.close()
             except:
                 pass
