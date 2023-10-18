@@ -74,7 +74,7 @@ class LoginMission(object):
         if len(address[1]) > 4:
             address[1] = address[1][0:4]
         address = ' '.join(address)
-        await self.page.get_by_placeholder('Enter your street address').press_sequentially(address, delay=random.uniform(50, 150))
+        await self.page.get_by_placeholder('Enter your street address').press_sequentially(address, delay=random.uniform(50, 150), timeout=30000)
         logger.debug('Address Filled')
 
         while True:
