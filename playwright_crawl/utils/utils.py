@@ -5,12 +5,16 @@ import re
 import time
 from datetime import datetime, timedelta
 import pytz
+import random
 
 import redis.asyncio as redis
 from loguru import logger
 
 from playwright_crawl.config.settings import DATA_FOLDER_PATH
 from playwright_crawl.config.settings import EMAIL_SERVER, EMAIL_PASSWORD, EMAIL_USERNAME
+
+def random_delay():
+    return random.uniform(100, 300)
 
 
 async def get_acct_info(port: str = ''):

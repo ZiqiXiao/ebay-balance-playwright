@@ -20,7 +20,7 @@ LOG_NAME = os.environ.get('LOG_NAME', 'logs')
 REDIS_HOST = os.environ.get('REDIS_HOST', 'localhost')
 HDL = os.environ.get('HEADLESS', HEADLESS)
 ENV = os.environ.get('ENV', 'dev')
-PROXY_CHOICE = os.environ.get('PROXY_CHOICE', 'bd_proxy')
+PROXY_CHOICE = os.environ.get('PROXY_CHOICE', 'OX_PROXY')
 
 if HDL.lower() == 'true':
     HDL = True
@@ -154,7 +154,7 @@ async def start_browser(port: str):
             )
             
             await scheduler.init_browser()
-            await scheduler.register_mission()
+            await scheduler.register_mission_thr_home_page()
             pw_inst[port] = scheduler
             
             create_time = datetime.timestamp(datetime.now(pytz.timezone('Asia/Shanghai')))

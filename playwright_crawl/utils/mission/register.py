@@ -6,7 +6,7 @@ from loguru import logger
 from playwright.async_api import Page
 
 from playwright_crawl.config.settings import EMAIL_PASSWORD
-from playwright_crawl.utils.utils import get_verification_code
+from playwright_crawl.utils.utils import get_verification_code, random_delay
 
 
 class RegisterMission(object):
@@ -24,30 +24,43 @@ class RegisterMission(object):
 
         logger.debug(f'Register with {firstname} {lastname} --- {email} --- {password}')
 
-        await self.page.locator('input[id="firstname"]').click(delay=random.uniform(50, 150))
-        await self.page.type('input[id="firstname"]', firstname)
-        await self.page.wait_for_timeout(random.random() * 1000)
+        await self.page.locator('input[id="firstname"]').click(delay=random_delay())
+        # await self.page.locator('input[id="firstname"]').press_sequentially(firstname)
+        for i in firstname:
+            await self.page.locator('input[id="firstname"]').press(i)
+            await self.page.wait_for_timeout(random_delay())
+        await self.page.wait_for_timeout(random_delay() * 5)
         logger.debug('First Name Filled')
 
-        await self.page.locator('input[id="lastname"]').click(delay=random.uniform(50, 150))
-        await self.page.type('input[id="lastname"]', lastname)
-        await self.page.wait_for_timeout(random.random() * 1000)
+        await self.page.locator('input[id="lastname"]').click(delay=random_delay())
+        # await self.page.locator('input[id="lastname"]').press_sequentially(lastname, delay=random_delay())
+        for i in lastname:
+            await self.page.locator('input[id="lastname"]').press(i)
+            await self.page.wait_for_timeout(random_delay()) 
+        await self.page.wait_for_timeout(random_delay() * 5)
         logger.debug('Last Name Filled')
 
-        await self.page.locator('input[id="Email"]').click(delay=random.uniform(50, 150))
-        await self.page.type('input[id="Email"]', email)
-        await self.page.wait_for_timeout(random.random() * 1000)
+        await self.page.locator('input[id="Email"]').click(delay=random_delay())
+        # await self.page.locator('input[id="Email"]').press_sequentially(email, delay=random_delay())
+        for i in email:
+            await self.page.locator('input[id="Email"]').press(i)
+            await self.page.wait_for_timeout(random_delay()) 
+        await self.page.wait_for_timeout(random_delay() * 5)
         logger.debug('Email Filled')
 
-        await self.page.locator('input[id="password"]').click(delay=random.uniform(50, 150))
-        await self.page.type('input[id="password"]', password)
-        await self.page.wait_for_timeout(random.random() * 2000)
+        await self.page.locator('input[id="password"]').click(delay=random_delay())
+        # await self.page.locator('input[id="password"]').press_sequentially(password, delay=random_delay())
+        for i in password:
+            await self.page.locator('input[id="password"]').press(i)
+            await self.page.wait_for_timeout(random_delay()) 
+        await self.page.wait_for_timeout(random_delay() * 5)
         logger.debug('Password Filled')
 
-        await self.page.locator('#EMAIL_REG_FORM_SUBMIT').click(delay=random.uniform(50, 150))
-        await self.page.wait_for_timeout(random.random() * 1000)
+        await self.page.locator('#EMAIL_REG_FORM_SUBMIT').click(delay=random_delay())
+        await self.page.wait_for_timeout(random_delay() * 5)
         logger.debug('Submit Clicked')
         logger.info('Register Info Submitted')
+        await self.page.wait_for_timeout(timeout=555555)
 
         try:
             async with self.page.expect_response(lambda response: response.url == "https://signup.ebay.com/ajax/submit") as response_info:
@@ -69,22 +82,22 @@ class RegisterMission(object):
             raise Exception('Verification Code Not Found! Start a new mission.')
 
         await self.page.fill('input[id="pinbox-0"]', vcode[0])
-        await self.page.wait_for_timeout(random.random() * 200)
+        await self.page.wait_for_timeout(random_delay())
 
         await self.page.fill('input[id="pinbox-1"]', vcode[1])
-        await self.page.wait_for_timeout(random.random() * 200)
+        await self.page.wait_for_timeout(random_delay())
 
         await self.page.fill('input[id="pinbox-2"]', vcode[2])
-        await self.page.wait_for_timeout(random.random() * 200)
+        await self.page.wait_for_timeout(random_delay())
 
         await self.page.fill('input[id="pinbox-3"]', vcode[3])
-        await self.page.wait_for_timeout(random.random() * 200)
+        await self.page.wait_for_timeout(random_delay())
 
         await self.page.fill('input[id="pinbox-4"]', vcode[4])
-        await self.page.wait_for_timeout(random.random() * 200)
+        await self.page.wait_for_timeout(random_delay())
 
         await self.page.fill('input[id="pinbox-5"]', vcode[5])
-        await self.page.wait_for_timeout(random.random() * 200)
+        await self.page.wait_for_timeout(random_delay())
 
         logger.info('Verification Code Filled')
 

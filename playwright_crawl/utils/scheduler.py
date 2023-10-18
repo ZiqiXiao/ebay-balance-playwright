@@ -70,7 +70,7 @@ class Scheduler(object):
             latitude = round(random.uniform(lat_range[0], lat_range[1]), 6)
             longitude = round(random.uniform(long_range[0], long_range[1]), 6)
 
-            width = random.randint(1200, 1800)
+            width = random.randint(1080, 1200)
             height = random.randint(800, 1080)
 
             header = Headers()
@@ -78,23 +78,23 @@ class Scheduler(object):
 
             self.browser_context = await self.browser.new_context(
                 viewport={"width": width, "height": height},
-                user_agent=headers['User-Agent'],
-                timezone_id=timezone,
-                locale='en-US',
-                geolocation={'longitude': longitude, 'latitude': latitude},
+                # user_agent=headers['User-Agent'],
+                # timezone_id=timezone,
+                # locale='en-US',
+                # geolocation={'longitude': longitude, 'latitude': latitude},
                 # record_video_dir='logs'
             )
             self.page = await self.browser_context.new_page()
 
-        await stealth_async(self.page)
+        # await stealth_async(self.page)
 
         excluded_resource_types = ["stylesheet", "image", "font"] 
-        async def block_aggressively(route, request): 
-            if request.resource_type in excluded_resource_types and "hcaptcha" not in request.url: 
-                await route.abort() 
-            else: 
-                await route.continue_() 
-        await self.page.route("**/*", block_aggressively)
+        # async def block_aggressively(route, request): 
+            # if request.resource_type in excluded_resource_types and "hcaptcha" not in request.url: 
+                # await route.abort() 
+            # else: 
+                # await route.continue_() 
+        # await self.page.route("**/*", block_aggressively)
 
         logger.info('Init Browser Success!')
 
@@ -115,6 +115,49 @@ class Scheduler(object):
 
         await self.page.goto(SIGNIN_URL)
         await self.page.locator('#create-account-link').click(delay=random.uniform(50, 150), timeout=30000)
+
+        def random_substring(s, max_length=6):
+            if len(s) <= max_length:
+                return s
+            start_index = random.randint(0, len(s) - 1 - max_length)
+            end_index = start_index + max_length
+            return s[start_index:end_index]
+
+        # 生成两个随机的 email 本地部分
+        email_part1 = random_substring(self.faker.email().split('@')[0])
+        email_part2 = random_substring(self.faker.email().split('@')[0])
+
+        # 生成一个随机的5位数
+        random_number = str(random.randint(0, 99999))
+
+        # 构建最终的 email 地址
+        email = email_part1 + email_part2 + random_number + '@nuyy.cc'
+        password = EMAIL_PASSWORD
+
+        register = RegisterMission(self.page)
+        await register.fill_info(email, password)
+
+        login = LoginMission(self.page)
+        await login.fill_personal_info()
+        await self.page.wait_for_selector('input[id="redemption-code"]')
+        logger.info('Login Success!')
+
+    async def register_mission_thr_home_page(self):
+
+        async def captcha_handler(request):
+            async with captcha_semaphore:
+                if "https://www.ebay.com/captcha/init" in request.url:
+                    logger.debug('Captcha Event Is Listened')
+                    await Solution(page=self.page).resolve()
+
+        captcha_semaphore = asyncio.Semaphore(1)
+
+        logger.info('Start Register Mission...')
+        self.page.on('request', captcha_handler)
+        
+
+        await self.page.goto('https://ebay.co.uk')
+        await self.page.get_by_text('register').click(delay=random.uniform(50, 150))
 
         def random_substring(s, max_length=6):
             if len(s) <= max_length:
