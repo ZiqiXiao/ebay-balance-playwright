@@ -20,7 +20,7 @@ LOG_NAME = os.environ.get('LOG_NAME', 'logs')
 REDIS_HOST = os.environ.get('REDIS_HOST', 'localhost')
 HDL = os.environ.get('HEADLESS', HEADLESS)
 ENV = os.environ.get('ENV', 'dev')
-PROXY_CHOICE = os.environ.get('PROXY_CHOICE', 'BD_PROXY')
+PROXY_CHOICE = os.environ.get('PROXY_CHOICE', 'sm_proxy')
 
 if HDL.lower() == 'true':
     HDL = True

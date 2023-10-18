@@ -82,18 +82,19 @@ class Scheduler(object):
                 timezone_id=timezone,
                 locale='en-US',
                 geolocation={'longitude': longitude, 'latitude': latitude},
+                record_har_path='logs'
             )
             self.page = await self.browser_context.new_page()
 
         await stealth_async(self.page)
 
-        # excluded_resource_types = ["image", "font"] 
-        # async def block_aggressively(route, request): 
-            # if request.resource_type in excluded_resource_types and "hcaptcha" not in request.url: 
-                # await route.abort() 
-            # else: 
-                # await route.continue_() 
-        # await self.page.route("**/*", block_aggressively)
+        excluded_resource_types = ["image", "font"] 
+        async def block_aggressively(route, request): 
+            if request.resource_type in excluded_resource_types and "hcaptcha" not in request.url: 
+                await route.abort() 
+            else: 
+                await route.continue_() 
+        await self.page.route("**/*", block_aggressively)
 
         logger.info('Init Browser Success!')
 
