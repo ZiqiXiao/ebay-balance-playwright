@@ -87,13 +87,13 @@ class Scheduler(object):
 
         await stealth_async(self.page)
 
-        excluded_resource_types = ["stylesheet", "image", "font"] 
-        async def block_aggressively(route, request): 
-            if request.resource_type in excluded_resource_types and "hcaptcha" not in request.url: 
-                await route.abort() 
-            else: 
-                await route.continue_() 
-        await self.page.route("**/*", block_aggressively)
+        # excluded_resource_types = ["image", "font"] 
+        # async def block_aggressively(route, request): 
+            # if request.resource_type in excluded_resource_types and "hcaptcha" not in request.url: 
+                # await route.abort() 
+            # else: 
+                # await route.continue_() 
+        # await self.page.route("**/*", block_aggressively)
 
         logger.info('Init Browser Success!')
 

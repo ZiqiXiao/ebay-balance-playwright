@@ -63,8 +63,9 @@ class LoginMission(object):
     async def fill_personal_info(self):
         logger.debug('Filling Personal Info...')
         faker = Faker()
-        # await self.page.select_option('select[id="countryId"]', '1')
+        
         await self.page.wait_for_load_state('load')
+        await self.page.locator('#countryId').select_option(value='1')
 
         address = faker.address().split('\n')[0].split(' ')[0:2]
         if len(address[0]) > 3:
