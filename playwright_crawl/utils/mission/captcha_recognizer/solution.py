@@ -94,7 +94,7 @@ class Solution(object):
                     "title") == "验证":
                 await verify_button.click(delay=random.uniform(50, 150))
         else:
-            await aptcha_content_frame.click('.button-submit', delay=random.uniform(50, 150))
+            await captcha_content_frame.click('.button-submit', delay=random.uniform(50, 150))
             await self.verify_captcha()
 
     async def resolve(self):
