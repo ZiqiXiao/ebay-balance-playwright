@@ -82,7 +82,7 @@ class Scheduler(object):
                 timezone_id=timezone,
                 locale='en-US',
                 geolocation={'longitude': longitude, 'latitude': latitude},
-                # record_har_path='logs'
+                record_video_dir='logs'
             )
             self.page = await self.browser_context.new_page()
 
