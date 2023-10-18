@@ -20,7 +20,7 @@ LOG_NAME = os.environ.get('LOG_NAME', 'logs')
 REDIS_HOST = os.environ.get('REDIS_HOST', 'localhost')
 HDL = os.environ.get('HEADLESS', HEADLESS)
 ENV = os.environ.get('ENV', 'dev')
-PROXY_CHOICE = os.environ.get('PROXY_CHOICE', 'sm_proxy')
+PROXY_CHOICE = os.environ.get('PROXY_CHOICE', 'SM_PROXY')
 
 if HDL.lower() == 'true':
     HDL = True
@@ -168,8 +168,8 @@ async def start_browser(port: str):
             if pw_inst.get(port):
                  pw_inst[port] = None
             try:
-                with open(f"logs/error_page_{datetime.now()}.html", w) as f:
-                    f.write(scheduler.page.content())
+                with open(f"logs/error_page_{datetime.now()}.html", "w") as f:
+                    f.write(await scheduler.page.content())
                 await scheduler.close()
             except:
                 pass
