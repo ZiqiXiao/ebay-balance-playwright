@@ -65,7 +65,7 @@ class LoginMission(object):
         faker = Faker()
         
         await self.page.wait_for_load_state('load')
-        await self.page.locator('#countryId').select_option(value='1')
+        # await self.page.locator('#countryId').select_option(value='1')
 
         address = faker.address().split('\n')[0].split(' ')[0:2]
         if len(address[0]) > 3:
