@@ -185,6 +185,51 @@ class Scheduler(object):
         await self.page.wait_for_selector('input[id="redemption-code"]')
         logger.info('Login Success!')
 
+    async def register_mission_sginup(self):
+
+        async def captcha_handler(request):
+            async with captcha_semaphore:
+                if "https://www.ebay.com/captcha/init" in request.url:
+                    logger.debug('Captcha Event Is Listened')
+                    await Solution(page=self.page).resolve()
+
+        captcha_semaphore = asyncio.Semaphore(1)
+
+        logger.info('Start Register Mission...')
+        self.page.on('request', captcha_handler)
+        
+
+        await self.page.goto('https://signup.ebay.com/pa/crte#')
+        # await self.page.get_by_title('Email, select this option to create an account with your email address.').click()
+        # await self.page.locator('#create-account-link').click(delay=random.uniform(50, 150), timeout=30000)
+
+        def random_substring(s, max_length=6):
+            if len(s) <= max_length:
+                return s
+            start_index = random.randint(0, len(s) - 1 - max_length)
+            end_index = start_index + max_length
+            return s[start_index:end_index]
+
+        # 生成两个随机的 email 本地部分
+        email_part1 = random_substring(self.faker.email().split('@')[0])
+        email_part2 = random_substring(self.faker.email().split('@')[0])
+
+        # 生成一个随机的5位数
+        random_number = str(random.randint(0, 99999))
+
+        # 构建最终的 email 地址
+        email = email_part1 + email_part2 + random_number + '@nuyy.cc'
+        password = EMAIL_PASSWORD
+
+        register = RegisterMission(self.page)
+        await register.fill_info(email, password)
+
+        login = LoginMission(self.page)
+        await login.fill_personal_info()
+        await self.page.wait_for_selector('input[id="redemption-code"]')
+        logger.info('Login Success!')
+
+
     async def check_balance(self, gift_card_no):
         logger.info('Checking balance')
         balance = await CheckBalance(self.page).check_balance(gift_card_no)

@@ -157,7 +157,7 @@ async def start_browser(port: str):
             )
             
             await scheduler.init_browser()
-            await scheduler.register_mission()
+            await scheduler.register_mission_sginup()
             pw_inst[port] = scheduler
             
             create_time = datetime.timestamp(datetime.now(pytz.timezone('Asia/Shanghai')))
