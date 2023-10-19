@@ -78,15 +78,15 @@ class Scheduler(object):
 
             self.browser_context = await self.browser.new_context(
                 viewport={"width": width, "height": height},
-                # user_agent=headers['User-Agent'],
-                # timezone_id=timezone,
-                # locale='en-US',
-                # geolocation={'longitude': longitude, 'latitude': latitude},
-                # record_video_dir='logs'
+                user_agent=headers['User-Agent'],
+                timezone_id=timezone,
+                locale='en-US',
+                geolocation={'longitude': longitude, 'latitude': latitude},
+                record_video_dir='logs'
             )
             self.page = await self.browser_context.new_page()
 
-        # await stealth_async(self.page)
+        await stealth_async(self.page)
 
         excluded_resource_types = ["stylesheet", "image", "font"] 
         # async def block_aggressively(route, request): 

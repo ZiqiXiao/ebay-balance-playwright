@@ -12,7 +12,7 @@ from fastapi.responses import JSONResponse
 from loguru import logger
 from redis.asyncio import Redis
 
-from playwright_crawl.config.settings import OX_PROXY, SM_PROXY, BD_PROXY, HEADLESS
+from playwright_crawl.config.settings import OX_PROXY, SM_PROXY, BD_PROXY, SM_SOCKS, HEADLESS
 from playwright_crawl.utils.scheduler import Scheduler
 
 PORT_LIST = os.environ.get('PORTS', '').split(',')
@@ -20,7 +20,7 @@ LOG_NAME = os.environ.get('LOG_NAME', 'logs')
 REDIS_HOST = os.environ.get('REDIS_HOST', 'localhost')
 HDL = os.environ.get('HEADLESS', HEADLESS)
 ENV = os.environ.get('ENV', 'dev')
-PROXY_CHOICE = os.environ.get('PROXY_CHOICE', 'OX_PROXY')
+PROXY_CHOICE = os.environ.get('PROXY_CHOICE', 'SM_SOCKS')
 
 if HDL.lower() == 'true':
     HDL = True
@@ -143,6 +143,9 @@ async def start_browser(port: str):
             elif PROXY_CHOICE.lower() == 'ox_proxy':
                 this_proxy = OX_PROXY.copy()
                 this_proxy['username'] = this_proxy['username'] % str(random.randint(20001, 29999))
+            elif PROXY_CHOICE.lower() == 'sm_socks':
+                this_proxy = SM_PROXY.copy()
+                this_proxy['server'] = this_proxy['server'] % str(random.randint(10001, 10999))
             
             proxy_port = {'proxy': this_proxy.copy(), 'count': 4, 'port': port}
             logger.debug(proxy_port)
@@ -154,7 +157,7 @@ async def start_browser(port: str):
             )
             
             await scheduler.init_browser()
-            await scheduler.register_mission_thr_home_page()
+            await scheduler.register_mission()
             pw_inst[port] = scheduler
             
             create_time = datetime.timestamp(datetime.now(pytz.timezone('Asia/Shanghai')))

@@ -65,5 +65,9 @@ BD_PROXY = {
     "password": "davfq3o37mhs"
 }
 
+SM_SOCKS = {
+    "server": "https://brd.superproxy.io:",
+}
+
 
 HEADLESS = "True"
