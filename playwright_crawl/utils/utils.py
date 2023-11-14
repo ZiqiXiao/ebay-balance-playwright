@@ -5,6 +5,7 @@ import re
 import time
 from datetime import datetime, timedelta
 import pytz
+from faker import Faker
 import random
 
 import redis.asyncio as redis
@@ -90,3 +91,38 @@ def get_verification_code(
             time.sleep(sleep_time)
             continue
     return None
+
+def generate_email():
+    def random_substring(s, max_length=6):
+            if len(s) <= max_length:
+                return s
+            start_index = random.randint(0, len(s) - 1 - max_length)
+            end_index = start_index + max_length
+            return s[start_index:end_index]
+
+    # 生成两个随机的 email 本地部分
+    email_part1 = random_substring(faker.email().split('@')[0])
+    email_part2 = random_substring(faker.email().split('@')[0])
+
+    # 生成一个随机的5位数
+    random_number = str(random.randint(0, 99999))
+
+    # 构建最终的 email 地址
+    email = email_part1 + email_part2 + random_number + '@loveebay.icu'
+
+    return email
+
+def JM_get_token():
+    JM_USERNAME = os.getenv("JM_USERNAME")
+    JM_PASSWORD = os.getenv("JM_PASSWORD")
+    url = f'http://api.uoomsg.com/zc/data.php?code=signIn&user={JM_USERNAME}&password={JM_PASSWORD}'
+    r = requests.get(url)
+    JM_TOKEN = r.content.decode('utf-8')
+    os.environ.setdefault('JM_TOKEN', JM_TOKEN)
+
+def JM_get_phone_no():
+    JM_TOKEN = os.getenv("JM_TOKEN")
+    url = f'http://api.uoomsg.com/zc/data.php?code=getPhone&token={JM_TOKEN}'
+    r = requests.get(url)
+    return r.content.decode('utf-8')
+

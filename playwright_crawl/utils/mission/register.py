@@ -1,12 +1,14 @@
 import asyncio
 import random
+import requests
+
 
 from faker import Faker
 from loguru import logger
 from playwright.async_api import Page
 
 from playwright_crawl.config.settings import EMAIL_PASSWORD
-from playwright_crawl.utils.utils import get_verification_code, random_delay
+from playwright_crawl.utils.utils import get_verification_code, random_delay, JM_get_phone_no, JM_get_token
 
 
 class RegisterMission(object):
@@ -67,9 +69,12 @@ class RegisterMission(object):
                 actual_response = await response_info.value  # Access the actual response object
                 response_data = await actual_response.json()
                 if response_data.get("isRiskInitiated"):
-                    logger.debug('Risk initiated, fetching verification code...')
+                    logger.debug('Email Risk initiated, fetching verification code...')
                     await self.fill_verification_code(email=email)
-                if response_data.get('errorMessage'):
+                elif response_data.get("isPhoneRiskInitiated"):
+                    logger.debug('Phone Risk initiated, fetching verification code...')
+                    await self.phone_verification()
+                elif response_data.get('errorMessage'):
                     if response_data.get('errorMessage').get('text') == 'Oops, we ran into a problem. Try again later.':
                         raise Exception("Encounter error msg: Oops, we ran into a problem. Try again later.")
         except:
@@ -100,6 +105,30 @@ class RegisterMission(object):
         await self.page.wait_for_timeout(random_delay())
 
         logger.info('Verification Code Filled')
+
+    async def phone_verification(self):
+        # JM Login
+        
+
+        # get phone number
+        phone_no = JM_get_phone_no()
+        if 'ERROR:token错误，请重新通过API登录' in phone_no:
+            JM_get_token()
+            phone_no = JM_get_phone_no()
+            if 'ERROR' in phone_no:
+               raise Exception("JM API Error")
+
+        # choose country
+        await self.page.locator('#countryCd').click(delay=random_delay())
+        await self.page.get_by_text("China Mainland").click(delay=random_delay())
+
+        # fill phone number
+        await self.page.locator('input[id="phoneCountry"]').press_sequentially(phone_no, delay=random_delay())
+
+        # recieve verification code
+        # fill code
+
+        pass
 
 
 async def get_verification_code_async(keywords: str = 'Your eBay security code', email: str = ''):

@@ -1,10 +1,15 @@
 import os
 import random
 
+from dotenv import load_dotenv
+load_dotenv('../playwright_crawl/.env')
+
 from environs import Env
 
 env = Env()
 env.read_env()
+
+
 
 
 """
@@ -60,9 +65,9 @@ OX_PROXY = {
 
 BD_PROXY = {
     # BD
-    "server": os.environ('BD_PROXY_SERVER'),
-    "username": os.environ('BD_PROXY_USERNAME'),
-    "password": os.environ('BD_PROXY_PASSWORD')
+    "server": env.str('BD_PROXY_SERVER'),
+    "username": env.str('BD_PROXY_USERNAME'),
+    "password": env.str('BD_PROXY_PASSWORD')
 }
 
 SM_SOCKS = {
