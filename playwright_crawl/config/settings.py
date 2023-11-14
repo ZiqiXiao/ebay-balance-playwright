@@ -60,9 +60,9 @@ OX_PROXY = {
 
 BD_PROXY = {
     # BD
-    "server": "https://brd.superproxy.io:22225",
-    "username": "brd-customer-hl_5983915f-zone-data_center-country-us-session-%s",
-    "password": "davfq3o37mhs"
+    "server": os.environ('BD_PROXY_SERVER'),
+    "username": os.environ('BD_PROXY_USERNAME'),
+    "password": os.environ('BD_PROXY_PASSWORD')
 }
 
 SM_SOCKS = {
