@@ -8,7 +8,7 @@ from loguru import logger
 from playwright.async_api import Page
 
 from playwright_crawl.config.settings import EMAIL_PASSWORD
-from playwright_crawl.utils.utils import get_verification_code, random_delay, JM_get_phone_no, JM_get_token
+from playwright_crawl.utils.utils import get_verification_code, random_delay, JM_get_phone_no, JM_get_token, JM_rec_text
 
 
 class RegisterMission(object):
@@ -107,9 +107,6 @@ class RegisterMission(object):
         logger.info('Verification Code Filled')
 
     async def phone_verification(self):
-        # JM Login
-        
-
         # get phone number
         phone_no = JM_get_phone_no()
         if 'ERROR:token错误，请重新通过API登录' in phone_no:
@@ -117,6 +114,7 @@ class RegisterMission(object):
             phone_no = JM_get_phone_no()
             if 'ERROR' in phone_no:
                raise Exception("JM API Error")
+        logger.info(f'Using phone number {phone_no}')
 
         # choose country
         await self.page.locator('#countryCd').click(delay=random_delay())
@@ -126,9 +124,34 @@ class RegisterMission(object):
         await self.page.locator('input[id="phoneCountry"]').press_sequentially(phone_no, delay=random_delay())
 
         # recieve verification code
+        await self.page.wait_for_timeout(5000)
+        vcode = JM_rec_text(phone_no=phone_no, keyword='ebay')
+        if '尚未收到' in vcode:
+            await self.page.wait_for_timeout(5000)
+            vcode = JM_rec_text(phone_no=phone_no, keyword='ebay')
+            if '尚未收到' in vcode:
+                raise Exception(f'vcode is not recieved by {phone_no}') 
+                logger.error(f'vcode is not recieved by {phone_no}')
         # fill code
+        await self.page.fill('input[id="pinbox-0"]', vcode[0])
+        await self.page.wait_for_timeout(random_delay())
 
-        pass
+        await self.page.fill('input[id="pinbox-1"]', vcode[1])
+        await self.page.wait_for_timeout(random_delay())
+
+        await self.page.fill('input[id="pinbox-2"]', vcode[2])
+        await self.page.wait_for_timeout(random_delay())
+
+        await self.page.fill('input[id="pinbox-3"]', vcode[3])
+        await self.page.wait_for_timeout(random_delay())
+
+        await self.page.fill('input[id="pinbox-4"]', vcode[4])
+        await self.page.wait_for_timeout(random_delay())
+
+        await self.page.fill('input[id="pinbox-5"]', vcode[5])
+        await self.page.wait_for_timeout(random_delay())
+
+        logger.info('Verification Code Filled') 
 
 
 async def get_verification_code_async(keywords: str = 'Your eBay security code', email: str = ''):

@@ -136,7 +136,7 @@ async def start_browser(port: str):
             print(PROXY_CHOICE)
             if PROXY_CHOICE.lower() == 'bd_proxy':
                 this_proxy = BD_PROXY.copy()
-                this_proxy['username'] = this_proxy['username'] % str(random.randint(20001, 29999))
+                # this_proxy['username'] = this_proxy['username'] % str(random.randint(20001, 29999))
             elif PROXY_CHOICE.lower() == 'sm_proxy':
                 this_proxy = SM_PROXY.copy()
                 this_proxy['server'] = this_proxy['server'] % str(random.randint(10001, 10999))
@@ -157,7 +157,7 @@ async def start_browser(port: str):
             )
             
             await scheduler.init_browser()
-            await scheduler.register_mission_sginup()
+            await scheduler.register_mission()
             pw_inst[port] = scheduler
             
             create_time = datetime.timestamp(datetime.now(pytz.timezone('Asia/Shanghai')))

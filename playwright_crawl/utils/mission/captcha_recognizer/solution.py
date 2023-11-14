@@ -18,9 +18,14 @@ class Solution(object):
         self.entry_selector = entry_selector
 
     async def trigger_captcha(self) -> None:
-        captcha_entry_frame = await self.page.wait_for_selector(self.entry_selector)
-        captcha_entry_frame = await captcha_entry_frame.content_frame()
-        await captcha_entry_frame.locator('#checkbox').click(delay=random.uniform(50, 150))
+        try:
+            captcha_entry_frame = await self.page.wait_for_selector(self.entry_selector, timeout=8000)
+            captcha_entry_frame = await captcha_entry_frame.content_frame()
+            await captcha_entry_frame.locator('#checkbox').click(delay=random.uniform(50, 150))
+        except:
+            captcha_entry_frame = self.page.frame_locator('#captchaFrame')
+            print(await captcha_entry_frame.locator('#s0-71-captcha-ui').inner_html())
+
         logger.debug('Click the captcha entry')
 
     async def verify_captcha(self):

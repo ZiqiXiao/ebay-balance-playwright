@@ -87,13 +87,13 @@ class LoginMission(object):
                 break
             
         logger.debug('Address Selected')
-        phone_no = await self.page.wait_for_selector('input[id="phoneFlagComp1"]')
-        await phone_no.click(delay=random.uniform(50, 150))
+        # phone_no = await self.page.wait_for_selector('input[id="phoneFlagComp1"]')
+        # await phone_no.click(delay=random.uniform(50, 150))
 
-        phone_no_prefix = ['319400', '213555', '312555']
+        # phone_no_prefix = ['319400', '213555', '312555']
 
-        await phone_no.type( random.choice(phone_no_prefix) + faker.msisdn()[9:], delay=random.uniform(50, 150))
-        logger.debug('Phone Number Filled')
+        # await phone_no.type( random.choice(phone_no_prefix) + faker.msisdn()[9:], delay=random.uniform(50, 150))
+        # logger.debug('Phone Number Filled')
         
         await self.page.wait_for_timeout(random.random()*1000)
         await self.page.locator('#sbtBtn').click(delay=random.uniform(50, 150))

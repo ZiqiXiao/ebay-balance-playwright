@@ -93,6 +93,7 @@ def get_verification_code(
     return None
 
 def generate_email():
+    faker = Faker()
     def random_substring(s, max_length=6):
             if len(s) <= max_length:
                 return s
@@ -125,4 +126,12 @@ def JM_get_phone_no():
     url = f'http://api.uoomsg.com/zc/data.php?code=getPhone&token={JM_TOKEN}'
     r = requests.get(url)
     return r.content.decode('utf-8')
+
+def JM_rec_text(phone_no: str, keyword: str):
+    JM_TOKEN = os.getenv("JM_TOKEN")
+    url = f'http://api.uoomsg.com/zc/data.php?code=getMsg&token={JM_TOKEN}&phone={phone_no}&keyWord={keyword}'
+    r = requests.get(url)
+    return r.content.decode('utf-8')
+
+
 
