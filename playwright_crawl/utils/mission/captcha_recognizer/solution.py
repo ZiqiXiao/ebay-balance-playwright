@@ -24,7 +24,9 @@ class Solution(object):
             await captcha_entry_frame.locator('#checkbox').click(delay=random.uniform(50, 150))
         except:
             captcha_entry_frame = self.page.frame_locator('#captchaFrame')
-            print(await captcha_entry_frame.locator('#s0-71-captcha-ui').inner_html())
+            captcha_entry_frame2 = await captcha_entry_frame.locator('.target-icaptcha-slot > iframe').element_handle()
+            captcha_entry_frame2 = await captcha_entry_frame2.content_frame()
+            await captcha_entry_frame2.locator('#checkbox').click(delay=random.uniform(50, 150))
 
         logger.debug('Click the captcha entry')
 
