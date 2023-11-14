@@ -16,10 +16,11 @@ class Solution(object):
         self.page = page
         self.captcha_resolver = CaptchaResolver()
         self.entry_selector = entry_selector
+        self.inner_frame_flag = 0
 
     async def trigger_captcha(self) -> None:
         try:
-            captcha_entry_frame = await self.page.wait_for_selector(self.entry_selector, timeout=8000)
+            captcha_entry_frame = await self.page.wait_for_selector(self.entry_selector, timeout=3000)
             captcha_entry_frame = await captcha_entry_frame.content_frame()
             await captcha_entry_frame.locator('#checkbox').click(delay=random.uniform(50, 150))
         except:
@@ -27,12 +28,16 @@ class Solution(object):
             captcha_entry_frame2 = await captcha_entry_frame.locator('.target-icaptcha-slot > iframe').element_handle()
             captcha_entry_frame2 = await captcha_entry_frame2.content_frame()
             await captcha_entry_frame2.locator('#checkbox').click(delay=random.uniform(50, 150))
+            self.inner_frame_flag = 1
 
         logger.debug('Click the captcha entry')
 
     async def verify_captcha(self):
-
-        captcha_content_frame = await self.page.wait_for_selector('iframe[title*="Main content"]')
+        if self.inner_frame_flag:
+            captcha_content_frame = self.page.frame_locator('#captchaFrame')
+            captcha_content_frame = await captcha_content_frame.locator('iframe[title*="Main content"]').element_handle()
+        else:
+            captcha_content_frame = await self.page.wait_for_selector('iframe[title*="Main content"]')
         captcha_content_frame = await captcha_content_frame.content_frame()
         await captcha_content_frame.wait_for_selector('.task-image .wrapper .image')
         single_captcha_elements = await captcha_content_frame.locator('.task-image .wrapper .image').element_handles()

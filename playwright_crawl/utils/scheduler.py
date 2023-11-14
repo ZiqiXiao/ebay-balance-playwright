@@ -105,8 +105,11 @@ class Scheduler(object):
         async def captcha_handler(request):
             async with captcha_semaphore:
                 if "https://www.ebay.com/captcha/init" in request.url:
-                    logger.debug('Captcha Event Is Listened')
-                    await Solution(page=self.page).resolve()
+                    try:
+                        logger.debug('Captcha Event Is Listened')
+                        await Solution(page=self.page).resolve()
+                    except:
+                        pass
 
         captcha_semaphore = asyncio.Semaphore(1)
 

@@ -7,6 +7,7 @@ from datetime import datetime, timedelta
 import pytz
 from faker import Faker
 import random
+import requests
 
 import redis.asyncio as redis
 from loguru import logger
@@ -128,10 +129,16 @@ def JM_get_phone_no():
     return r.content.decode('utf-8')
 
 def JM_rec_text(phone_no: str, keyword: str):
+    time.sleep(4)
     JM_TOKEN = os.getenv("JM_TOKEN")
     url = f'http://api.uoomsg.com/zc/data.php?code=getMsg&token={JM_TOKEN}&phone={phone_no}&keyWord={keyword}'
     r = requests.get(url)
-    return r.content.decode('utf-8')
+    match = re.search(r'(?<!\d)\d{6}(?!\d)', r.content.decode('utf-8'))
+    if match:
+        verification_code = match.group()
+    else:
+        verification_code = None
+    return verification_code 
 
 
 

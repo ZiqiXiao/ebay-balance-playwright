@@ -62,23 +62,25 @@ class RegisterMission(object):
         await self.page.wait_for_timeout(random_delay() * 5)
         logger.debug('Submit Clicked')
         logger.info('Register Info Submitted')
-        await self.page.wait_for_timeout(timeout=555555)
 
-        try:
-            async with self.page.expect_response(lambda response: response.url == "https://signup.ebay.com/ajax/submit") as response_info:
-                actual_response = await response_info.value  # Access the actual response object
-                response_data = await actual_response.json()
-                if response_data.get("isRiskInitiated"):
-                    logger.debug('Email Risk initiated, fetching verification code...')
-                    await self.fill_verification_code(email=email)
-                elif response_data.get("isPhoneRiskInitiated"):
-                    logger.debug('Phone Risk initiated, fetching verification code...')
-                    await self.phone_verification()
-                elif response_data.get('errorMessage'):
-                    if response_data.get('errorMessage').get('text') == 'Oops, we ran into a problem. Try again later.':
-                        raise Exception("Encounter error msg: Oops, we ran into a problem. Try again later.")
-        except:
-            raise Exception("Dosen't hear back after from submitting register info!")
+        logger.debug('Phone Risk initiated, fetching verification code...')
+        await self.phone_verification()
+
+        # try:
+        #     async with self.page.expect_response(lambda response: response.url == "https://signup.ebay.com/ajax/submit") as response_info:
+        #         actual_response = await response_info.value  # Access the actual response object
+        #         response_data = await actual_response.json()
+        #         if response_data.get("isRiskInitiated"):
+        #             logger.debug('Email Risk initiated, fetching verification code...')
+        #             await self.fill_verification_code(email=email)
+        #         elif response_data.get("isPhoneRiskInitiated"):
+        #             logger.debug('Phone Risk initiated, fetching verification code...')
+        #             await self.phone_verification()
+        #         elif response_data.get('errorMessage'):
+        #             if response_data.get('errorMessage').get('text') == 'Oops, we ran into a problem. Try again later.':
+        #                 raise Exception("Encounter error msg: Oops, we ran into a problem. Try again later.")
+        # except:
+        #     raise Exception("Dosen't hear back after from submitting register info!")
 
     async def fill_verification_code(self, email: str = ''):
         vcode: str | None = await get_verification_code_async(email=email)
@@ -122,16 +124,17 @@ class RegisterMission(object):
 
         # fill phone number
         await self.page.locator('input[id="phoneCountry"]').press_sequentially(phone_no, delay=random_delay())
+        await self.page.click('#SEND_AUTH_CODE')
 
         # recieve verification code
-        await self.page.wait_for_timeout(5000)
-        vcode = JM_rec_text(phone_no=phone_no, keyword='ebay')
-        if '尚未收到' in vcode:
-            await self.page.wait_for_timeout(5000)
-            vcode = JM_rec_text(phone_no=phone_no, keyword='ebay')
-            if '尚未收到' in vcode:
+        vcode = await get_phone_vcode(phone_no=phone_no, keyword='ebay')
+        if not vcode:
+            vcode = await get_phone_vcode(phone_no=phone_no, keyword='ebay')
+            if not vcode:
                 raise Exception(f'vcode is not recieved by {phone_no}') 
                 logger.error(f'vcode is not recieved by {phone_no}')
+        logger.info(f'Vcode is {vcode}')
+
         # fill code
         await self.page.fill('input[id="pinbox-0"]', vcode[0])
         await self.page.wait_for_timeout(random_delay())
@@ -157,3 +160,7 @@ class RegisterMission(object):
 async def get_verification_code_async(keywords: str = 'Your eBay security code', email: str = ''):
     loop = asyncio.get_event_loop()
     return await loop.run_in_executor(None, get_verification_code, keywords, email)
+
+async def get_phone_vcode(phone_no, keyword):
+    loop = asyncio.get_event_loop()
+    return await loop.run_in_executor(None, JM_rec_text, phone_no, keyword) 
