@@ -129,10 +129,11 @@ def JM_get_phone_no():
     return r.content.decode('utf-8')
 
 def JM_rec_text(phone_no: str, keyword: str):
-    time.sleep(4)
+    time.sleep(5)
     JM_TOKEN = os.getenv("JM_TOKEN")
     url = f'http://api.uoomsg.com/zc/data.php?code=getMsg&token={JM_TOKEN}&phone={phone_no}&keyWord={keyword}'
     r = requests.get(url)
+    logger.info(f'Recieving text: {r.content.decode("utf-8")}')
     match = re.search(r'(?<!\d)\d{6}(?!\d)', r.content.decode('utf-8'))
     if match:
         verification_code = match.group()

@@ -27,35 +27,35 @@ class RegisterMission(object):
         logger.debug(f'Register with {firstname} {lastname} --- {email} --- {password}')
 
         await self.page.locator('input[id="firstname"]').click(delay=random_delay())
-        # await self.page.locator('input[id="firstname"]').press_sequentially(firstname)
-        for i in firstname:
-            await self.page.locator('input[id="firstname"]').press(i)
-            await self.page.wait_for_timeout(random_delay())
-        await self.page.wait_for_timeout(random_delay() * 5)
+        await self.page.locator('input[id="firstname"]').press_sequentially(firstname)
+        # for i in firstname:
+        #     await self.page.locator('input[id="firstname"]').press(i)
+        #     await self.page.wait_for_timeout(random_delay())
+        # await self.page.wait_for_timeout(random_delay() * 5)
         logger.debug('First Name Filled')
 
         await self.page.locator('input[id="lastname"]').click(delay=random_delay())
-        # await self.page.locator('input[id="lastname"]').press_sequentially(lastname, delay=random_delay())
-        for i in lastname:
-            await self.page.locator('input[id="lastname"]').press(i)
-            await self.page.wait_for_timeout(random_delay()) 
-        await self.page.wait_for_timeout(random_delay() * 5)
+        await self.page.locator('input[id="lastname"]').press_sequentially(lastname, delay=random_delay())
+        # for i in lastname:
+        #     await self.page.locator('input[id="lastname"]').press(i)
+        #     await self.page.wait_for_timeout(random_delay()) 
+        # await self.page.wait_for_timeout(random_delay() * 5)
         logger.debug('Last Name Filled')
 
         await self.page.locator('input[id="Email"]').click(delay=random_delay())
-        # await self.page.locator('input[id="Email"]').press_sequentially(email, delay=random_delay())
-        for i in email:
-            await self.page.locator('input[id="Email"]').press(i)
-            await self.page.wait_for_timeout(random_delay()) 
-        await self.page.wait_for_timeout(random_delay() * 5)
+        await self.page.locator('input[id="Email"]').press_sequentially(email, delay=random_delay())
+        # for i in email:
+        #     await self.page.locator('input[id="Email"]').press(i)
+        #     await self.page.wait_for_timeout(random_delay()) 
+        # await self.page.wait_for_timeout(random_delay() * 5)
         logger.debug('Email Filled')
 
         await self.page.locator('input[id="password"]').click(delay=random_delay())
-        # await self.page.locator('input[id="password"]').press_sequentially(password, delay=random_delay())
-        for i in password:
-            await self.page.locator('input[id="password"]').press(i)
-            await self.page.wait_for_timeout(random_delay()) 
-        await self.page.wait_for_timeout(random_delay() * 5)
+        await self.page.locator('input[id="password"]').press_sequentially(password, delay=random_delay())
+        # for i in password:
+        #     await self.page.locator('input[id="password"]').press(i)
+        #     await self.page.wait_for_timeout(random_delay()) 
+        # await self.page.wait_for_timeout(random_delay() * 5)
         logger.debug('Password Filled')
 
         await self.page.locator('#EMAIL_REG_FORM_SUBMIT').click(delay=random_delay())
@@ -127,7 +127,15 @@ class RegisterMission(object):
         await self.page.click('#SEND_AUTH_CODE')
 
         # recieve verification code
-        vcode = await get_phone_vcode(phone_no=phone_no, keyword='ebay')
+        retry_get_phone_vcode = 3
+        vcode = None
+        while not vcode:
+            if retry_get_phone_vcode != 0:
+                vcode = await get_phone_vcode(phone_no=phone_no, keyword='ebay')
+                retry_get_phone_vcode -= 1
+            else:
+                raise Exception(f'Not recieving valid text')
+
         if not vcode:
             vcode = await get_phone_vcode(phone_no=phone_no, keyword='ebay')
             if not vcode:
