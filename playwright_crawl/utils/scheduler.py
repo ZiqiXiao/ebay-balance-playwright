@@ -123,7 +123,7 @@ class Scheduler(object):
 
         login = LoginMission(self.page)
         await login.fill_personal_info()
-        await self.page.wait_for_selector('input[id="redemption-code"]')
+        await self.page.wait_for_selector('input[id="redemption-code"]', timeout=60000)
         logger.info('Login Success!')
 
 

@@ -7,6 +7,7 @@ from loguru import logger
 from playwright_crawl.config.settings import CAPTCHA_SINGLE_IMAGE_FILE_PATH
 from playwright_crawl.utils.mission.captcha_recognizer.captcha_resolver import CaptchaResolver
 from playwright_crawl.utils.mission.captcha_recognizer.utils import resize_base64_image_async
+from playwright_crawl.utils.utils import random_delay
 
 
 class Solution(object):
@@ -92,8 +93,10 @@ class Solution(object):
             logger.debug(f'recognized_indices {recognized_indices}')
             click_targets = await captcha_content_frame.locator('.task').element_handles()
             for recognized_index in recognized_indices:
-                await click_targets[recognized_index].click()
-                await self.page.wait_for_timeout(random.random())
+                # await click_targets[recognized_index].click()
+                box = await click_targets[recognized_index].bounding_box()
+                await self.page.mouse.click(box["x"] + box["width"] / 2, box["y"] + box["height"] / 2, delay=random_delay())
+                await self.page.wait_for_timeout(random_delay())
 
             # after all captcha clicked
             verify_button = await captcha_content_frame.wait_for_selector('.button-submit')

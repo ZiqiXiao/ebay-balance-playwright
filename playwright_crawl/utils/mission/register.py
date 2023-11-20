@@ -26,39 +26,44 @@ class RegisterMission(object):
 
         logger.debug(f'Register with {firstname} {lastname} --- {email} --- {password}')
 
-        await self.page.locator('input[id="firstname"]').click(delay=random_delay())
-        await self.page.locator('input[id="firstname"]').press_sequentially(firstname)
-        # for i in firstname:
-        #     await self.page.locator('input[id="firstname"]').press(i)
-        #     await self.page.wait_for_timeout(random_delay())
-        # await self.page.wait_for_timeout(random_delay() * 5)
+        box = await self.page.locator('input[id="firstname"]').bounding_box()
+        await self.page.mouse.click(box["x"] + box["width"] / 2, box["y"] + box["height"] / 2, delay=random_delay())
+        # await self.page.locator('input[id="firstname"]').press_sequentially(firstname)
+        for i in firstname:
+            await self.page.locator('input[id="firstname"]').press(i)
+            await self.page.wait_for_timeout(random_delay())
+        await self.page.wait_for_timeout(random_delay() * 5)
         logger.debug('First Name Filled')
 
-        await self.page.locator('input[id="lastname"]').click(delay=random_delay())
-        await self.page.locator('input[id="lastname"]').press_sequentially(lastname, delay=random_delay())
-        # for i in lastname:
-        #     await self.page.locator('input[id="lastname"]').press(i)
-        #     await self.page.wait_for_timeout(random_delay()) 
-        # await self.page.wait_for_timeout(random_delay() * 5)
+        box = await self.page.locator('input[id="lastname"]').bounding_box()
+        await self.page.mouse.click(box["x"] + box["width"] / 2, box["y"] + box["height"] / 2, delay=random_delay())
+        # await self.page.locator('input[id="lastname"]').press_sequentially(lastname, delay=random_delay())
+        for i in lastname:
+            await self.page.locator('input[id="lastname"]').press(i)
+            await self.page.wait_for_timeout(random_delay()) 
+        await self.page.wait_for_timeout(random_delay() * 5)
         logger.debug('Last Name Filled')
 
-        await self.page.locator('input[id="Email"]').click(delay=random_delay())
-        await self.page.locator('input[id="Email"]').press_sequentially(email, delay=random_delay())
-        # for i in email:
-        #     await self.page.locator('input[id="Email"]').press(i)
-        #     await self.page.wait_for_timeout(random_delay()) 
-        # await self.page.wait_for_timeout(random_delay() * 5)
+        box = await self.page.locator('input[id="Email"]').bounding_box()
+        await self.page.mouse.click(box["x"] + box["width"] / 2, box["y"] + box["height"] / 2, delay=random_delay())
+        # await self.page.locator('input[id="Email"]').press_sequentially(email, delay=random_delay())
+        for i in email:
+            await self.page.locator('input[id="Email"]').press(i)
+            await self.page.wait_for_timeout(random_delay()) 
+        await self.page.wait_for_timeout(random_delay() * 5)
         logger.debug('Email Filled')
 
-        await self.page.locator('input[id="password"]').click(delay=random_delay())
-        await self.page.locator('input[id="password"]').press_sequentially(password, delay=random_delay())
-        # for i in password:
-        #     await self.page.locator('input[id="password"]').press(i)
-        #     await self.page.wait_for_timeout(random_delay()) 
-        # await self.page.wait_for_timeout(random_delay() * 5)
+        box = await self.page.locator('input[id="password"]').bounding_box()
+        await self.page.mouse.click(box["x"] + box["width"] / 2, box["y"] + box["height"] / 2, delay=random_delay())
+        # await self.page.locator('input[id="password"]').press_sequentially(password, delay=random_delay())
+        for i in password:
+            await self.page.locator('input[id="password"]').press(i)
+            await self.page.wait_for_timeout(random_delay()) 
+        await self.page.wait_for_timeout(random_delay() * 5)
         logger.debug('Password Filled')
 
-        await self.page.locator('#EMAIL_REG_FORM_SUBMIT').click(delay=random_delay())
+        box = await self.page.locator('#EMAIL_REG_FORM_SUBMIT').bounding_box()
+        await self.page.mouse.click(box["x"] + box["width"] / 2, box["y"] + box["height"] / 2, delay=random_delay())
         await self.page.wait_for_timeout(random_delay() * 5)
         logger.debug('Submit Clicked')
         logger.info('Register Info Submitted')
