@@ -82,8 +82,7 @@ class Scheduler(object):
                 user_agent=headers['User-Agent'],
                 timezone_id=timezone,
                 locale='en-US',
-                geolocation={'longitude': longitude, 'latitude': latitude},
-                record_video_dir='logs'
+                geolocation={'longitude': longitude, 'latitude': latitude}
             )
             self.page = await self.browser_context.new_page()
 
