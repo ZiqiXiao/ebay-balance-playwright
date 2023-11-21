@@ -31,7 +31,7 @@ class RegisterMission(object):
         for i in firstname:
             await self.page.locator('input[id="firstname"]').press(i)
             await self.page.wait_for_timeout(random_delay())
-        await self.page.wait_for_timeout(random_delay() * 5)
+        await self.page.wait_for_timeout(random_delay())
         logger.debug('First Name Filled')
 
         await mock_mouse_click(self.page, self.page.locator('input[id="lastname"]'))
@@ -39,7 +39,7 @@ class RegisterMission(object):
         for i in lastname:
             await self.page.locator('input[id="lastname"]').press(i)
             await self.page.wait_for_timeout(random_delay()) 
-        await self.page.wait_for_timeout(random_delay() * 5)
+        await self.page.wait_for_timeout(random_delay())
         logger.debug('Last Name Filled')
 
         await mock_mouse_click(self.page, self.page.locator('input[id="Email"]'))
@@ -47,7 +47,7 @@ class RegisterMission(object):
         for i in email:
             await self.page.locator('input[id="Email"]').press(i)
             await self.page.wait_for_timeout(random_delay()) 
-        await self.page.wait_for_timeout(random_delay() * 5)
+        await self.page.wait_for_timeout(random_delay())
         logger.debug('Email Filled')
 
         await mock_mouse_click(self.page, self.page.locator('input[id="password"]'))
@@ -55,11 +55,11 @@ class RegisterMission(object):
         for i in password:
             await self.page.locator('input[id="password"]').press(i)
             await self.page.wait_for_timeout(random_delay()) 
-        await self.page.wait_for_timeout(random_delay() * 5)
+        await self.page.wait_for_timeout(random_delay())
         logger.debug('Password Filled')
 
         await mock_mouse_click(self.page, self.page.locator('#EMAIL_REG_FORM_SUBMIT'))
-        await self.page.wait_for_timeout(random_delay() * 5)
+        await self.page.wait_for_timeout(random_delay())
         logger.debug('Submit Clicked')
         logger.info('Register Info Submitted')
 
