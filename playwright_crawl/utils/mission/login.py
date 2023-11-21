@@ -5,7 +5,7 @@ from faker import Faker
 from loguru import logger
 from playwright.async_api import Page
 
-from playwright_crawl.utils.utils import get_verification_code
+from playwright_crawl.utils.utils import get_verification_code, mock_mouse_click
 
 
 class LoginMission(object):
@@ -75,6 +75,7 @@ class LoginMission(object):
         if len(address[1]) > 4:
             address[1] = address[1][0:4]
         address = ' '.join(address)
+        await mock_mouse_click(self.page, self.page.locator('#addressSugg'))
         await self.page.locator('#addressSugg').press_sequentially(address, delay=random.uniform(50, 150), timeout=30000)
         logger.debug('Address Filled')
 
@@ -82,7 +83,8 @@ class LoginMission(object):
             # 尝试获取address-count元素
             address_count_element = self.page.locator('#addressSugg_listitem0 > div.address-count').first
             try:
-                await self.page.locator('#addressSugg_listitem0').click(delay=random.uniform(50, 150), timeout=1000)
+                await mock_mouse_click(self.page, self.page.locator('#addressSugg_listitem0'))
+                # await self.page.locator('#addressSugg_listitem0').click(delay=random.uniform(50, 150), timeout=1000)
             except:
                 break
             
@@ -95,8 +97,9 @@ class LoginMission(object):
         # await phone_no.type( random.choice(phone_no_prefix) + faker.msisdn()[9:], delay=random.uniform(50, 150))
         # logger.debug('Phone Number Filled')
         
-        await self.page.wait_for_timeout(random.random()*1000)
-        await self.page.locator('#sbtBtn').click(delay=random.uniform(50, 150))
+        await self.page.wait_for_timeout(random.random()*1000) 
+        # await self.page.locator('#sbtBtn').click(delay=random.uniform(50, 150))
+        await mock_mouse_click(self.page, self.page.locator('#sbtBtn'))
 
 
 async def get_verification_code_async(keyword: str = 'your security code', email: str = ''):

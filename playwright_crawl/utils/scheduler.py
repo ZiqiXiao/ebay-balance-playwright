@@ -15,7 +15,7 @@ from playwright_crawl.utils.mission.captcha_recognizer.solution import Solution
 from playwright_crawl.utils.mission.login import LoginMission
 from playwright_crawl.utils.mission.register import RegisterMission
 from playwright_stealth import stealth_async
-from playwright_crawl.utils.utils import generate_email
+from playwright_crawl.utils.utils import generate_email, mock_mouse_click
 
 
 class Scheduler(object):
@@ -116,14 +116,14 @@ class Scheduler(object):
         self.page.on('request', captcha_handler)
         
         await self.page.goto(SIGNIN_URL)
-        await self.page.locator('#create-account-link').click(delay=random.uniform(50, 150), timeout=30000)
+        await mock_mouse_click(self.page, self.page.locator('#create-account-link'))
 
         register = RegisterMission(self.page)
         await register.fill_info(generate_email(), EMAIL_PASSWORD)
 
         login = LoginMission(self.page)
         await login.fill_personal_info()
-        await self.page.wait_for_selector('input[id="redemption-code"]', timeout=60000)
+        await self.page.wait_for_selector('input[id="redemption-code"]')
         logger.info('Login Success!')
 
 

@@ -8,7 +8,7 @@ from loguru import logger
 from playwright.async_api import Page
 
 from playwright_crawl.config.settings import EMAIL_PASSWORD
-from playwright_crawl.utils.utils import get_verification_code, random_delay, JM_get_phone_no, JM_get_token, JM_rec_text
+from playwright_crawl.utils.utils import get_verification_code, random_delay, JM_get_phone_no, JM_get_token, JM_rec_text, mock_mouse_click
 
 
 class RegisterMission(object):
@@ -26,8 +26,7 @@ class RegisterMission(object):
 
         logger.debug(f'Register with {firstname} {lastname} --- {email} --- {password}')
 
-        box = await self.page.locator('input[id="firstname"]').bounding_box()
-        await self.page.mouse.click(box["x"] + box["width"] / 2, box["y"] + box["height"] / 2, delay=random_delay())
+        await mock_mouse_click(self.page, self.page.locator('input[id="firstname"]'))
         # await self.page.locator('input[id="firstname"]').press_sequentially(firstname)
         for i in firstname:
             await self.page.locator('input[id="firstname"]').press(i)
@@ -35,8 +34,7 @@ class RegisterMission(object):
         await self.page.wait_for_timeout(random_delay() * 5)
         logger.debug('First Name Filled')
 
-        box = await self.page.locator('input[id="lastname"]').bounding_box()
-        await self.page.mouse.click(box["x"] + box["width"] / 2, box["y"] + box["height"] / 2, delay=random_delay())
+        await mock_mouse_click(self.page, self.page.locator('input[id="lastname"]'))
         # await self.page.locator('input[id="lastname"]').press_sequentially(lastname, delay=random_delay())
         for i in lastname:
             await self.page.locator('input[id="lastname"]').press(i)
@@ -44,8 +42,7 @@ class RegisterMission(object):
         await self.page.wait_for_timeout(random_delay() * 5)
         logger.debug('Last Name Filled')
 
-        box = await self.page.locator('input[id="Email"]').bounding_box()
-        await self.page.mouse.click(box["x"] + box["width"] / 2, box["y"] + box["height"] / 2, delay=random_delay())
+        await mock_mouse_click(self.page, self.page.locator('input[id="Email"]'))
         # await self.page.locator('input[id="Email"]').press_sequentially(email, delay=random_delay())
         for i in email:
             await self.page.locator('input[id="Email"]').press(i)
@@ -53,8 +50,7 @@ class RegisterMission(object):
         await self.page.wait_for_timeout(random_delay() * 5)
         logger.debug('Email Filled')
 
-        box = await self.page.locator('input[id="password"]').bounding_box()
-        await self.page.mouse.click(box["x"] + box["width"] / 2, box["y"] + box["height"] / 2, delay=random_delay())
+        await mock_mouse_click(self.page, self.page.locator('input[id="password"]'))
         # await self.page.locator('input[id="password"]').press_sequentially(password, delay=random_delay())
         for i in password:
             await self.page.locator('input[id="password"]').press(i)
@@ -62,8 +58,7 @@ class RegisterMission(object):
         await self.page.wait_for_timeout(random_delay() * 5)
         logger.debug('Password Filled')
 
-        box = await self.page.locator('#EMAIL_REG_FORM_SUBMIT').bounding_box()
-        await self.page.mouse.click(box["x"] + box["width"] / 2, box["y"] + box["height"] / 2, delay=random_delay())
+        await mock_mouse_click(self.page, self.page.locator('#EMAIL_REG_FORM_SUBMIT'))
         await self.page.wait_for_timeout(random_delay() * 5)
         logger.debug('Submit Clicked')
         logger.info('Register Info Submitted')

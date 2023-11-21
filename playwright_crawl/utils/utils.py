@@ -8,12 +8,18 @@ import pytz
 from faker import Faker
 import random
 import requests
+from playwright.async_api import Page, Locator
 
 import redis.asyncio as redis
 from loguru import logger
 
 from playwright_crawl.config.settings import DATA_FOLDER_PATH
 from playwright_crawl.config.settings import EMAIL_SERVER, EMAIL_PASSWORD, EMAIL_USERNAME
+
+async def mock_mouse_click(page: Page, locator: Locator):
+    box = await locator.bounding_box()
+    await page.mouse.click(box["x"] + box["width"] / 2, box["y"] + box["height"] / 2, delay=random_delay())
+
 
 def random_delay():
     return random.uniform(100, 300)
