@@ -7,7 +7,7 @@ from loguru import logger
 from playwright_crawl.config.settings import CAPTCHA_SINGLE_IMAGE_FILE_PATH
 from playwright_crawl.utils.mission.captcha_recognizer.captcha_resolver import CaptchaResolver
 from playwright_crawl.utils.mission.captcha_recognizer.utils import resize_base64_image_async
-from playwright_crawl.utils.utils import random_delay
+from playwright_crawl.utils.utils import random_delay, mock_mouse_click
 
 
 class Solution(object):
@@ -23,12 +23,14 @@ class Solution(object):
         try:
             captcha_entry_frame = await self.page.wait_for_selector(self.entry_selector, timeout=3000)
             captcha_entry_frame = await captcha_entry_frame.content_frame()
-            await captcha_entry_frame.locator('#checkbox').click(delay=random.uniform(50, 150))
+            await mock_mouse_click(self.page, captcha_entry_frame.locator('#checkbox'))
+            # await captcha_entry_frame.locator('#checkbox').click(delay=random.uniform(50, 150))
         except:
             captcha_entry_frame = self.page.frame_locator('#captchaFrame')
             captcha_entry_frame2 = await captcha_entry_frame.locator('.target-icaptcha-slot > iframe').element_handle()
             captcha_entry_frame2 = await captcha_entry_frame2.content_frame()
-            await captcha_entry_frame2.locator('#checkbox').click(delay=random.uniform(50, 150))
+            await mock_mouse_click(self.page, captcha_entry_frame2.locator('#checkbox'))
+            # await captcha_entry_frame2.locator('#checkbox').click(delay=random.uniform(50, 150))
             self.inner_frame_flag = 1
 
         logger.debug('Click the captcha entry')
@@ -93,21 +95,21 @@ class Solution(object):
             logger.debug(f'recognized_indices {recognized_indices}')
             click_targets = await captcha_content_frame.locator('.task').element_handles()
             for recognized_index in recognized_indices:
-                # await click_targets[recognized_index].click()
-                box = await click_targets[recognized_index].bounding_box()
-                await self.page.mouse.click(box["x"] + box["width"] / 2, box["y"] + box["height"] / 2, delay=random_delay())
+                await mock_mouse_click(self.page, click_targets[recognized_index])
                 await self.page.wait_for_timeout(random_delay())
 
             # after all captcha clicked
             verify_button = await captcha_content_frame.wait_for_selector('.button-submit')
             if await verify_button.get_attribute("title") == "Next Challenge" or await verify_button.get_attribute(
                     "title") == "下一个挑战":
+                # await mock_mouse_click(self.page, captcha_content_frame.locator('.button-submit'))
                 verify_button.click(delay=random.uniform(50, 150))
                 await self.verify_captcha()
 
             elif await verify_button.get_attribute("title") == "Verify Answers" or await verify_button.get_attribute(
                     "title") == "验证":
                 await verify_button.click(delay=random.uniform(50, 150))
+                # await mock_mouse_click(self.page. captcha_content_frame.locator('.button-submit'))
         else:
             await captcha_content_frame.click('.button-submit', delay=random.uniform(50, 150))
             await self.verify_captcha()

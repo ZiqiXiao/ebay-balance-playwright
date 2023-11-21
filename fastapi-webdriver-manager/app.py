@@ -136,7 +136,7 @@ async def start_browser(port: str):
             print(PROXY_CHOICE)
             if PROXY_CHOICE.lower() == 'bd_proxy':
                 this_proxy = BD_PROXY.copy()
-                # this_proxy['username'] = this_proxy['username'] % str(random.randint(20001, 29999))
+                this_proxy['username'] = this_proxy['username'] % str(random.randint(20001, 29999))
             elif PROXY_CHOICE.lower() == 'sm_proxy':
                 this_proxy = SM_PROXY.copy()
                 this_proxy['server'] = this_proxy['server'] % str(random.randint(10001, 10999))

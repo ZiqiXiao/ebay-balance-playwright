@@ -5,7 +5,7 @@ from faker import Faker
 from loguru import logger
 from playwright.async_api import Page
 
-from playwright_crawl.utils.utils import get_verification_code, mock_mouse_click
+from playwright_crawl.utils.utils import get_verification_code, mock_mouse_click, random_delay
 
 
 class LoginMission(object):
@@ -97,7 +97,7 @@ class LoginMission(object):
         # await phone_no.type( random.choice(phone_no_prefix) + faker.msisdn()[9:], delay=random.uniform(50, 150))
         # logger.debug('Phone Number Filled')
         
-        await self.page.wait_for_timeout(random.random()*1000) 
+        await self.page.wait_for_timeout(random_delay()) 
         # await self.page.locator('#sbtBtn').click(delay=random.uniform(50, 150))
         await mock_mouse_click(self.page, self.page.locator('#sbtBtn'))
 

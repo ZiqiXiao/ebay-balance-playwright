@@ -18,7 +18,11 @@ from playwright_crawl.config.settings import EMAIL_SERVER, EMAIL_PASSWORD, EMAIL
 
 async def mock_mouse_click(page: Page, locator: Locator):
     box = await locator.bounding_box()
-    await page.mouse.click(box["x"] + box["width"] / 2, box["y"] + box["height"] / 2, delay=random_delay())
+    await page.mouse.move(box["x"] + box["width"] / 2, box["y"] + box["height"] / 2, steps=random.randint(10, 25))
+    await page.wait_for_timeout(random_delay())
+    await page.mouse.down()
+    await page.wait_for_timeout(random_delay())
+    await page.mouse.up()
 
 
 def random_delay():

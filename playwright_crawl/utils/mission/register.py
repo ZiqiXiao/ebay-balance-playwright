@@ -119,12 +119,16 @@ class RegisterMission(object):
         logger.info(f'Using phone number {phone_no}')
 
         # choose country
+        # await mock_mouse_click(self.page, self.page.locator('#countryCd'))
+        # await mock_mouse_click(self.page, self.page.get_by_text("China Mainland")) 
         await self.page.locator('#countryCd').click(delay=random_delay())
         await self.page.get_by_text("China Mainland").click(delay=random_delay())
 
         # fill phone number
+        # await mock_mouse_click(self.page, self.page.locator('input[id="phoneCountry"]'))
         await self.page.locator('input[id="phoneCountry"]').press_sequentially(phone_no, delay=random_delay())
-        await self.page.click('#SEND_AUTH_CODE')
+        await mock_mouse_click(self.page, self.page.locator('#SEND_AUTH_CODE'))
+        # await self.page.click('#SEND_AUTH_CODE')
 
         # recieve verification code
         retry_get_phone_vcode = 3
